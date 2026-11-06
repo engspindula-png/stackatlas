@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import type { Ficha, ServicoFicha } from '../../../schemas/ficha.js';
+import { lerMeuStack, sincronizarServicosComMeuStack, obterCaminhoMeuStack } from './meuStack.js';
 
 export interface OpcoesExportacaoIa {
   arquivoSaida?: string;
@@ -9,6 +10,7 @@ export interface OpcoesExportacaoIa {
   nomeArquivo?: 'CLAUDE.md' | 'AGENTS.md';
   meuStack?: string[];
   caminhoRelativoCatalogo?: string;
+  sincronizarMeuStack?: boolean;
 }
 
 /**
@@ -60,13 +62,19 @@ export function resolverFichaParaAlvo(alvo: string): { caminhoFicha: string; fic
 
 /**
  * Gera o conteúdo ultracompacto para o arquivo de contexto da IA (CLAUDE.md / AGENTS.md).
- * Contém o índice da stack atual e a regra de consulta sob demanda ao catálogo.
+ * Contém o índice da stack atual e regras de sistema estritas sobre meu-stack.json,
+ * nomenclatura oficial de .env.example e proteção contra pacotes obsoletos.
  */
 export function gerarContextoIa(ficha: Ficha, opcoes: OpcoesExportacaoIa = {}): string {
   const relCatalog = opcoes.caminhoRelativoCatalogo || 'catalog';
   const linhas: string[] = [];
 
-  linhas.push(`# StackAtlas — Contexto de Arquitetura`);
+  // Obtém lista de serviços homologados do meu-stack.json
+  const meuStackAtual = opcoes.meuStack && opcoes.meuStack.length > 0
+    ? opcoes.meuStack
+    : lerMeuStack().servicos.map((s) => s.id);
+
+  linhas.push(`# StackAtlas — Contexto de Arquitetura e Regras de Sistema`);
   linhas.push(``);
   linhas.push(`> Repositório: \`${ficha.repo.url}\` | Commit: \`${ficha.repo.commit.slice(0, 7)}\``);
   linhas.push(``);
@@ -106,12 +114,44 @@ export function gerarContextoIa(ficha: Ficha, opcoes: OpcoesExportacaoIa = {}): 
     linhas.push(``);
   }
 
-  // 2. Regra de Consulta Sob Demanda ao Catálogo
-  linhas.push(`## 2. Instruções Rígidas para IA de Programação`);
+  // 2. Regras Estritas de Sistema para IA de Programação
+  linhas.push(`## 2. Regras Estritas de Sistema para IA de Programação`);
   linhas.push(``);
-  linhas.push(`1. **Consulta Sob Demanda ao Catálogo:**`);
-  linhas.push(`   - NUNCA despeje ou solicite o catálogo inteiro de uma vez.`);
-  linhas.push(`   - Quando precisar configurar, codificar ou integrar um serviço específico, consulte EXCLUSIVAMENTE o seu arquivo YAML individual em \`${relCatalog}/<categoria>/<servico>.yaml\`.`);
+  linhas.push(`A IA que atua no desenvolvimento, manutenção ou refatoração deste projeto DEVE obedecer rigorosamente às seguintes diretrizes:`);
+  linhas.push(``);
+
+  // Regra 1: Reaproveitamento da Stack Homologada (meu-stack.json)
+  const listaStackStr = meuStackAtual.length > 0
+    ? meuStackAtual.map((s) => `\`${s}\``).join(', ')
+    : '`supabase`';
+
+  linhas.push(`1. **Reaproveitamento de Serviços Homologados (\`meu-stack.json\`):**`);
+  linhas.push(`   - Antes de sugerir a adoção de novas ferramentas para novas funcionalidades (como bancos de dados, autenticação, modelos de IA ou e-mails), consulte os serviços já homologados pelo usuário em \`~/.stackatlas/meu-stack.json\`.`);
+  linhas.push(`   - Priorize SEMPRE os serviços já homologados e familiares ao desenvolvedor (${listaStackStr}).`);
+  linhas.push(`   - NUNCA introduza ferramentas redundantes ou novos fornecedores externos para categorias já atendidas pela stack homologada sem requisição explícita.`);
+  linhas.push(``);
+
+  // Regra 2: Geração de .env.example com nomenclatura exata
+  linhas.push(`2. **Geração e Manutenção do \`.env.example\` com Nomenclatura Exata:**`);
+  linhas.push(`   - Ao adicionar ou alterar variáveis de ambiente para serviços externos, NUNCA invente nomes arbitrários.`);
+  linhas.push(`   - Consulte o YAML do serviço em \`${relCatalog}/<categoria>/<servico>.yaml\` e utilize EXATAMENTE os nomes de variáveis homologados no campo \`variaveis\` do catálogo.`);
+  linhas.push(`   - NUNCA insira nem solicite valores reais, credenciais ou tokens em arquivos de código ou exemplos; limite-se aos nomes padronizados.`);
+  linhas.push(``);
+
+  // Regra 3: Proteção contra dependências obsoletas
+  linhas.push(`3. **Proteção Rigorosa Contra Dependências Obsoletas:**`);
+  linhas.push(`   - NUNCA sugira a instalação ou o uso de pacotes listados em \`dependenciasObsoletas\` no catálogo do StackAtlas.`);
+  linhas.push(`   - Pacotes descontinuados conhecidos e suas alternativas oficiais obrigatórias:`);
+  linhas.push(`     - ❌ \`aws-sdk\` (v2 descontinuado) ➔ Utilize SDK v3 modular (ex: \`@aws-sdk/client-ses\`).`);
+  linhas.push(`     - ❌ \`@google/generative-ai\` (obsoleto) ➔ Utilize \`@google/genai\`.`);
+  linhas.push(`     - ❌ \`mailgun-js\` (abandonado) ➔ Utilize \`mailgun.js\` com \`form-data\`.`);
+  linhas.push(`   - Antes de sugerir comandos de instalação (\`npm install\`, \`pnpm add\`), verifique se o pacote não está presente em \`dependenciasObsoletas\` no YAML do respectivo serviço.`);
+  linhas.push(``);
+
+  // Regra 4: Consulta Sob Demanda ao Catálogo
+  linhas.push(`4. **Consulta Sob Demanda ao Catálogo:**`);
+  linhas.push(`   - NUNCA solicite nem carregue em contexto o catálogo inteiro de uma vez.`);
+  linhas.push(`   - Ao implementar ou integrar um serviço específico, consulte EXCLUSIVAMENTE o seu arquivo YAML individual em \`${relCatalog}/<categoria>/<servico>.yaml\`.`);
   linhas.push(`   - Obtenha dele a lista oficial de variáveis, padrões de autenticação e bibliotecas suportadas.`);
 
   return linhas.join('\n') + '\n';
@@ -126,6 +166,20 @@ export async function exportarContextoIa(
 ): Promise<{ caminhoArquivo: string; conteudo: string }> {
   const { caminhoFicha, ficha } = resolverFichaParaAlvo(alvo);
   const nomeArquivo = opcoes.nomeArquivo || 'CLAUDE.md';
+
+  // Sincroniza os serviços da ficha atual no meu-stack.json do usuário
+  if (opcoes.sincronizarMeuStack !== false && ficha.servicos && ficha.servicos.length > 0) {
+    sincronizarServicosComMeuStack(
+      ficha.servicos
+        .filter((s): s is ServicoFicha & { id: string } => typeof s.id === 'string' && s.id.length > 0)
+        .map((s) => ({
+          id: s.id,
+          nome: s.nome,
+          categoria: s.categoria,
+          origem: ficha.repo.url,
+        }))
+    );
+  }
 
   let dirDestino = opcoes.destinoDir;
   if (!dirDestino) {
