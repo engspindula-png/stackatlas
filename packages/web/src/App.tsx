@@ -1,24 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { obterFichas, executarTestesConexao, obterEstadoLocal } from './api.js';
+import { obterFichas, executarTestesConexao, obterEstadoLocal, obterCatalogo } from './api.js';
 import { Sidebar } from './components/Sidebar.js';
 import { MapLayer1 } from './components/MapLayer1.js';
-import type { ItemFichaSalva, Ficha, ItemTesteResultado } from './types.js';
+import type { ItemFichaSalva, Ficha, ItemTesteResultado, ServicoFicha, EntradaCatalogoInfo } from './types.js';
 
 export const App: React.FC = () => {
   const [fichas, setFichas] = useState<ItemFichaSalva[]>([]);
   const [fichaAtivaItem, setFichaAtivaItem] = useState<ItemFichaSalva | null>(null);
+  const [catalogo, setCatalogo] = useState<EntradaCatalogoInfo[]>([]);
+  const [servicoSelecionado, setServicoSelecionado] = useState<ServicoFicha | null>(null);
   const [carregando, setCarregando] = useState<boolean>(true);
   const [testando, setTestando] = useState<boolean>(false);
   const [erro, setErro] = useState<string | null>(null);
   const [testesEstado, setTestesEstado] = useState<Record<string, ItemTesteResultado>>({});
 
   useEffect(() => {
+    (window as any).__selecionarServico = (s: ServicoFicha | null) => setServicoSelecionado(s);
+  }, []);
+
+  useEffect(() => {
     async function carregar() {
       try {
         setCarregando(true);
         setErro(null);
-        const lista = await obterFichas();
+        const [lista, listaCatalogo] = await Promise.all([
+          obterFichas(),
+          obterCatalogo(),
+        ]);
         setFichas(lista);
+        setCatalogo(listaCatalogo);
         if (lista.length > 0) {
           setFichaAtivaItem(lista[0]);
           await carregarEstadoFicha(lista[0].arquivo);
@@ -62,6 +72,7 @@ export const App: React.FC = () => {
     const selecionada = fichas.find((f) => f.arquivo === nomeArquivo);
     if (selecionada) {
       setFichaAtivaItem(selecionada);
+      setServicoSelecionado(null);
       await carregarEstadoFicha(selecionada.arquivo);
     }
   };
@@ -152,7 +163,12 @@ export const App: React.FC = () => {
               <p style={{ color: 'var(--text-dim)', fontSize: '12px' }}>Certifique-se de que o servidor local está rodando em <code>127.0.0.1:4173</code>.</p>
             </div>
           ) : fichaAtiva ? (
-            <MapLayer1 ficha={fichaAtiva} />
+            <MapLayer1
+              ficha={fichaAtiva}
+              catalogo={catalogo}
+              servicoSelecionado={servicoSelecionado}
+              aoSelecionarServico={setServicoSelecionado}
+            />
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
               <p>Nenhuma ficha selecionada.</p>
@@ -162,6 +178,9 @@ export const App: React.FC = () => {
 
         <Sidebar
           ficha={fichaAtiva}
+          servicoFocado={servicoSelecionado}
+          aoLimparFoco={() => setServicoSelecionado(null)}
+          catalogo={catalogo}
           testesEstado={testesEstado}
           aoTestar={aoTestarConexoes}
           testando={testando}
