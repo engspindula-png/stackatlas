@@ -1,16 +1,47 @@
+# Dependências e compilação
 node_modules/
 dist/
-.DS_Store
-Thumbs.db
-*.log
+build/
+.turbo/
+.cache/
+
+# Variáveis de ambiente e segredos (Regra de Segurança Estrita)
 .env
-.env.local
+.env.*
+*.local
+!.env.example
+!.env.sample
+!.env.template
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dados locais e temporários
 .stackatlas/
 tmp/
+temp/
 coverage/
+*.swp
+*.swo
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Repositórios clonados e fixtures
 spike/repos/
 spike/node_modules/
 fixtures/nextjs-subscription-payments/
 fixtures/openstatus/
 fixtures/taxonomy/
 fixtures/nextjs-template-mongodb/
+
+# Editores
+.idea/
+.vscode/*
+!.vscode/extensions.json
