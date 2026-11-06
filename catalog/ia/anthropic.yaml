@@ -1,0 +1,36 @@
+id: anthropic
+nome: Anthropic
+categoria: ia
+subcategoria: llm
+site: https://www.anthropic.com
+cadastro: https://console.anthropic.com
+icone: anthropic
+sinais:
+  configuracao: []
+  dependencias:
+    - "@anthropic-ai/sdk"
+  dependenciasObsoletas: []
+  variaveis:
+    - ANTHROPIC_API_KEY
+    - ANTHROPIC_
+  hosts:
+    - api.anthropic.com
+  chaves:
+    - sk-ant-
+teste:
+  nivel3:
+    metodo: GET
+    url: https://api.anthropic.com/v1/models
+    headers:
+      x-api-key: "{chave}"
+      anthropic-version: "2023-06-01"
+    dominiosPermitidos:
+      - api.anthropic.com
+    regra: status_200
+alternativas:
+  - openai
+  - gemini
+  - openrouter
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.anthropic.com/en/api/getting-started

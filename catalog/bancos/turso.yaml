@@ -1,0 +1,33 @@
+id: turso
+nome: Turso
+categoria: bancos
+subcategoria: sql
+site: https://turso.tech
+cadastro: https://turso.tech/app
+icone: turso
+sinais:
+  configuracao: []
+  dependencias:
+    - "@libsql/client"
+    - "@tursodatabase/api"
+  dependenciasObsoletas: []
+  variaveis:
+    - TURSO_DATABASE_URL
+    - TURSO_AUTH_TOKEN
+    - TURSO_
+  hosts:
+    - "*.turso.io"
+  chaves: []
+teste:
+  nivel1:
+    metodo: GET
+    url: https://api.turso.io
+    dominiosPermitidos:
+      - api.turso.io
+    regra: alcance_dns
+alternativas:
+  - neon
+  - supabase
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.turso.tech

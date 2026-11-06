@@ -1,0 +1,40 @@
+id: supabase
+nome: Supabase
+categoria: backend
+subcategoria: baas
+site: https://supabase.com
+cadastro: https://supabase.com/dashboard
+icone: supabase
+sinais:
+  configuracao:
+    - supabase/config.toml
+  dependencias:
+    - "@supabase/supabase-js"
+    - "@supabase/ssr"
+    - "@supabase/auth-helpers-nextjs"
+  dependenciasObsoletas: []
+  variaveis:
+    - NEXT_PUBLIC_SUPABASE_URL
+    - NEXT_PUBLIC_SUPABASE_ANON_KEY
+    - SUPABASE_SERVICE_ROLE_KEY
+    - SUPABASE_URL
+    - SUPABASE_ANON_KEY
+    - SUPABASE_
+  hosts:
+    - "*.supabase.co"
+  chaves:
+    - sbp_
+teste:
+  nivel1:
+    metodo: GET
+    url: https://supabase.com
+    dominiosPermitidos:
+      - supabase.com
+    regra: alcance_dns
+alternativas:
+  - firebase
+  - appwrite
+  - nhost
+verificadoEm: "2026-11-06"
+fontes:
+  - https://supabase.com/docs
