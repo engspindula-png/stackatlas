@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@specfy/stack-analyser": "1.27.6",
+    "yaml": "^2.4.0",
     "zod": "^3.23.8"
   }
 }
