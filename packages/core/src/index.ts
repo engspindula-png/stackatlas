@@ -7,4 +7,5 @@ export * from './matcher.js';
 export * from './fichaRecorder.js';
 export * from './server.js';
 export * from './tester.js';
+export * from './aiExporter.js';
 export * from './cli.js';

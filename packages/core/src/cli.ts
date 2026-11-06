@@ -10,6 +10,7 @@ import { readEnvAndConfigs } from './configReader.js';
 import { cruzarComCatalogo } from './matcher.js';
 import { montarFicha, gravarFicha, extrairDonoERepo } from './fichaRecorder.js';
 import { iniciarServidor } from './server.js';
+import { exportarContextoIa } from './aiExporter.js';
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -111,9 +112,10 @@ export async function main(args: string[] = process.argv.slice(2)): Promise<void
   if (!comando || comando === '--help' || comando === '-h') {
     console.log(`
 Uso do StackAtlas CLI:
-  stackatlas analisar <caminho-ou-url>   Analisa um repositório local ou remoto e grava a ficha
-  stackatlas server [--porta <porta>]    Inicia o servidor HTTP local (127.0.0.1)
-  stackatlas --help                      Exibe esta mensagem de ajuda
+  stackatlas analisar <caminho-ou-url>    Analisa um repositório local ou remoto e grava a ficha
+  stackatlas exportar-ia <caminho-ou-alvo> Gera o arquivo CLAUDE.md compacto de contexto para IA
+  stackatlas server [--porta <porta>]     Inicia o servidor HTTP local (127.0.0.1)
+  stackatlas --help                       Exibe esta mensagem de ajuda
 `);
     return;
   }
@@ -129,6 +131,30 @@ Uso do StackAtlas CLI:
       await executarAnalise(alvo);
     } catch (err) {
       console.error('Erro durante a análise:', err);
+      process.exit(1);
+    }
+    return;
+  }
+
+  if (comando === 'exportar-ia' || comando === 'export-ia') {
+    const alvo = args[1];
+    if (!alvo) {
+      console.error('Erro: informe o caminho do projeto ou a ficha para exportar o contexto de IA.');
+      console.error('Exemplo: stackatlas exportar-ia fixtures/nextjs-subscription-payments');
+      process.exit(1);
+    }
+
+    const saidaIdx = args.indexOf('--saida');
+    const arquivoSaida = saidaIdx !== -1 && args[saidaIdx + 1] ? args[saidaIdx + 1] : undefined;
+
+    try {
+      const res = await exportarContextoIa(alvo, { arquivoSaida });
+      console.log('='.repeat(70));
+      console.log(`✓ Contexto para IA exportado com sucesso!`);
+      console.log(`  Arquivo gerado: ${res.caminhoArquivo}`);
+      console.log('='.repeat(70));
+    } catch (err) {
+      console.error('Erro ao exportar contexto para IA:', err);
       process.exit(1);
     }
     return;
