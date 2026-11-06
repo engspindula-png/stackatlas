@@ -4,7 +4,9 @@ import type {
   Ficha,
   RespostaTesteApi,
   ItemTesteResultado,
+  EntradaCatalogoInfo,
 } from './types.js';
+import { CATALOGO_FALLBACK } from './utils/catalogoFallback.js';
 
 const API_BASE = '/api';
 const DIRECT_BACKEND = 'http://127.0.0.1:4173/api';
@@ -106,7 +108,7 @@ export async function obterEstadoLocal(chaveFicha: string): Promise<any> {
 /**
  * Obtém a lista completa de serviços do catálogo a partir de GET /api/catalogo.
  */
-export async function obterCatalogo(): Promise<any[]> {
+export async function obterCatalogo(): Promise<EntradaCatalogoInfo[]> {
   try {
     let res = await fetch(`${API_BASE}/catalogo`);
     if (!res.ok) {
@@ -114,11 +116,13 @@ export async function obterCatalogo(): Promise<any[]> {
     }
     if (res.ok) {
       const data = await res.json();
-      return data.catalogo || [];
+      if (data.catalogo && data.catalogo.length > 0) {
+        return data.catalogo;
+      }
     }
-    return [];
   } catch {
-    return [];
+    // se falhar conexão direta, utiliza o catálogo tipado local
   }
+  return CATALOGO_FALLBACK;
 }
 
