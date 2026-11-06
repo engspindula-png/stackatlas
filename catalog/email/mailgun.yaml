@@ -1,0 +1,38 @@
+id: mailgun
+nome: Mailgun
+categoria: email
+subcategoria: transacional
+site: https://www.mailgun.com
+cadastro: https://signup.mailgun.com/new/signup
+icone: mailgun
+sinais:
+  configuracao: []
+  dependencias:
+    - mailgun.js
+    - mailgun-js
+  dependenciasObsoletas:
+    - mailgun-js
+  variaveis:
+    - MAILGUN_API_KEY
+    - MAILGUN_DOMAIN
+    - MAILGUN_
+  hosts:
+    - api.mailgun.net
+    - api.eu.mailgun.net
+  chaves:
+    - key-
+teste:
+  nivel2:
+    metodo: GET
+    url: https://www.mailgun.com
+    dominiosPermitidos:
+      - mailgun.com
+    regra: alcance_dns
+alternativas:
+  - resend
+  - sendgrid
+  - postmark
+  - amazon-ses
+verificadoEm: "2026-11-06"
+fontes:
+  - https://documentation.mailgun.com

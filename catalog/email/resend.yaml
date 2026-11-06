@@ -1,0 +1,34 @@
+id: resend
+nome: Resend
+categoria: email
+subcategoria: transacional
+site: https://resend.com
+cadastro: https://resend.com/signup
+icone: resend
+sinais:
+  configuracao: []
+  dependencias:
+    - resend
+  dependenciasObsoletas: []
+  variaveis:
+    - RESEND_API_KEY
+    - RESEND_
+  hosts:
+    - api.resend.com
+  chaves:
+    - re_
+teste:
+  nivel2:
+    metodo: GET
+    url: https://resend.com
+    dominiosPermitidos:
+      - resend.com
+    regra: alcance_dns
+alternativas:
+  - sendgrid
+  - postmark
+  - mailgun
+  - amazon-ses
+verificadoEm: "2026-11-06"
+fontes:
+  - https://resend.com/docs

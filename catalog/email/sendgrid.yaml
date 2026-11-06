@@ -1,0 +1,39 @@
+id: sendgrid
+nome: SendGrid
+categoria: email
+subcategoria: transacional
+site: https://sendgrid.com
+cadastro: https://signup.sendgrid.com
+icone: sendgrid
+sinais:
+  configuracao: []
+  dependencias:
+    - "@sendgrid/mail"
+    - "@sendgrid/client"
+  dependenciasObsoletas: []
+  variaveis:
+    - SENDGRID_API_KEY
+    - SENDGRID_
+  hosts:
+    - api.sendgrid.com
+    - api.eu.sendgrid.com
+  chaves:
+    - SG.
+teste:
+  nivel3:
+    metodo: GET
+    url: https://api.sendgrid.com/v3/scopes
+    headers:
+      Authorization: "Bearer {chave}"
+    dominiosPermitidos:
+      - api.sendgrid.com
+      - api.eu.sendgrid.com
+    regra: status_200
+alternativas:
+  - resend
+  - postmark
+  - mailgun
+  - amazon-ses
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.sendgrid.com/api-reference/scopes/get-a-list-of-an-api-keys-scopes

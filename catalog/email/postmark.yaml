@@ -1,0 +1,34 @@
+id: postmark
+nome: Postmark
+categoria: email
+subcategoria: transacional
+site: https://postmarkapp.com
+cadastro: https://account.postmarkapp.com/sign_up
+icone: postmark
+sinais:
+  configuracao: []
+  dependencias:
+    - postmark
+  dependenciasObsoletas: []
+  variaveis:
+    - POSTMARK_SERVER_TOKEN
+    - POSTMARK_API_KEY
+    - POSTMARK_
+  hosts:
+    - api.postmarkapp.com
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://postmarkapp.com
+    dominiosPermitidos:
+      - postmarkapp.com
+    regra: alcance_dns
+alternativas:
+  - resend
+  - sendgrid
+  - mailgun
+  - amazon-ses
+verificadoEm: "2026-11-06"
+fontes:
+  - https://postmarkapp.com/developer

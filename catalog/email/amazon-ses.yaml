@@ -1,0 +1,38 @@
+id: amazon-ses
+nome: Amazon SES
+categoria: email
+subcategoria: transacional
+site: https://aws.amazon.com/ses/
+cadastro: https://portal.aws.amazon.com/signup
+icone: amazonses
+sinais:
+  configuracao: []
+  dependencias:
+    - "@aws-sdk/client-ses"
+    - aws-sdk
+  dependenciasObsoletas:
+    - aws-sdk
+  variaveis:
+    - AWS_SES_REGION
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    - AWS_
+  hosts:
+    - "email.*.amazonaws.com"
+  chaves:
+    - AKIA
+teste:
+  nivel2:
+    metodo: GET
+    url: https://aws.amazon.com/ses/
+    dominiosPermitidos:
+      - aws.amazon.com
+    regra: alcance_dns
+alternativas:
+  - resend
+  - sendgrid
+  - postmark
+  - mailgun
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.aws.amazon.com/ses/

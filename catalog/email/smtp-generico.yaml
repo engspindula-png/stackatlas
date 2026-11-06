@@ -1,0 +1,31 @@
+id: smtp-generico
+nome: SMTP Genérico
+categoria: email
+subcategoria: transacional
+site: https://www.rfc-editor.org/rfc/rfc5321
+cadastro: https://www.rfc-editor.org/rfc/rfc5321
+icone: mail
+sinais:
+  configuracao: []
+  dependencias:
+    - nodemailer
+  dependenciasObsoletas: []
+  variaveis:
+    - SMTP_HOST
+    - SMTP_PORT
+    - SMTP_USER
+    - SMTP_PASS
+    - SMTP_PASSWORD
+    - EMAIL_SERVER_HOST
+    - EMAIL_SERVER_PORT
+  hosts: []
+  chaves: []
+alternativas:
+  - resend
+  - sendgrid
+  - postmark
+  - mailgun
+  - amazon-ses
+verificadoEm: "2026-11-06"
+fontes:
+  - https://nodemailer.com/smtp/
