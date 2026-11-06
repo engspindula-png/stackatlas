@@ -165,7 +165,7 @@ export function montarFicha(input: MontarFichaInput): Ficha {
       motivo: 'Tecnologia detectada ainda não cadastrada no catálogo v1',
     })),
     modulosInternos,
-    alertas: [],
+    alertas: cruzamento.alertas || [],
   };
 
   // Validação estrita via Zod

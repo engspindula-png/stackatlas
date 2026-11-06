@@ -103,3 +103,22 @@ export async function obterEstadoLocal(chaveFicha: string): Promise<any> {
   }
 }
 
+/**
+ * Obtém a lista completa de serviços do catálogo a partir de GET /api/catalogo.
+ */
+export async function obterCatalogo(): Promise<any[]> {
+  try {
+    let res = await fetch(`${API_BASE}/catalogo`);
+    if (!res.ok) {
+      res = await fetch(`${DIRECT_BACKEND}/catalogo`);
+    }
+    if (res.ok) {
+      const data = await res.json();
+      return data.catalogo || [];
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}
+

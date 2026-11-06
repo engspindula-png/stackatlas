@@ -2,6 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { obterDiretorioFichasPadrao } from './fichaRecorder.js';
+import { carregarCatalogo, resolverDiretorioCatalogo } from './matcher.js';
 import {
   testarServico,
   gravarEstadoLocal,
@@ -186,6 +187,15 @@ export async function iniciarServidor(options: ServidorOptions = {}): Promise<Se
             2
           )
         );
+        return;
+      }
+
+      // Rota GET /api/catalogo (lista todas as entradas do catálogo)
+      if (pathname === '/api/catalogo') {
+        const dirCatalogo = resolverDiretorioCatalogo();
+        const catalogo = await carregarCatalogo(dirCatalogo);
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ total: catalogo.length, catalogo }, null, 2));
         return;
       }
 

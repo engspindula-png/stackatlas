@@ -110,3 +110,34 @@ export interface RespostaTesteApi {
   };
 }
 
+export interface EntradaCatalogoInfo {
+  id: string;
+  nome: string;
+  categoria: string;
+  subcategoria: string;
+  site: string;
+  cadastro: string;
+  icone: string;
+  sinais: {
+    configuracao?: string[];
+    dependencias?: string[];
+    dependenciasObsoletas?: Array<string | { nome: string; data?: string; motivo?: string }>;
+    variaveis?: string[];
+    hosts?: string[];
+    chaves?: string[];
+  };
+  alternativas?: string[];
+  verificadoEm?: string;
+  fontes?: string[];
+}
+
+export interface ConexaoDetalheInfo {
+  de: string;
+  para: string;
+  rotulo: string;
+  descricao: string;
+  confianca: 'certo' | 'provavel';
+  obsoleto: boolean;
+}
+
+

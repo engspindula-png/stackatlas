@@ -1,14 +1,15 @@
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 import path from 'node:path';
 import yaml from 'yaml';
 import type { AnalysisResult } from './detector.js';
 import type { ResultadoLeituraConfig } from './configReader.js';
-import type { ServicoFicha, VariavelFicha, SinalFicha } from '../../../schemas/ficha.js';
+import type { ServicoFicha, VariavelFicha, SinalFicha, AlertaFicha } from '../../../schemas/ficha.js';
 
 export interface SinaisCatalogo {
   configuracao?: string[];
   dependencias?: string[];
-  dependenciasObsoletas?: string[];
+  dependenciasObsoletas?: Array<string | { nome: string; data?: string; motivo?: string }>;
   variaveis?: string[];
   hosts?: string[];
   chaves?: string[];
@@ -39,6 +40,22 @@ export interface ResultadoCruzamento {
     tech: string;
     sinais: SinalFicha[];
   }>;
+  alertas: AlertaFicha[];
+}
+
+/**
+ * Resolve o diretório raiz 'catalog/' subindo até 6 níveis a partir do local atual.
+ */
+export function resolverDiretorioCatalogo(): string {
+  let dirAtual = path.resolve('.');
+  for (let i = 0; i < 6; i++) {
+    const candidate = path.join(dirAtual, 'catalog');
+    if (fsSync.existsSync(candidate)) {
+      return candidate;
+    }
+    dirAtual = path.dirname(dirAtual);
+  }
+  return path.resolve('catalog');
 }
 
 /**
@@ -84,6 +101,7 @@ export async function cruzarComCatalogo(
   const servicosCruzados: ServicoCruzado[] = [];
   const variaveisMapeadas: VariavelFicha[] = [];
   const servicosIdentificadosIds = new Set<string>();
+  const alertasMapeados: AlertaFicha[] = [];
 
   // Coleta todas as dependências extraídas dos package.json
   const todasDependencias = detectorResult.packageJsons.flatMap((p) => p.dependencies);
@@ -91,7 +109,7 @@ export async function cruzarComCatalogo(
   for (const entrada of catalogo) {
     const sinaisEncontrados: SinalFicha[] = [];
 
-    // 1. Cruzamento de Dependências
+    // 1. Cruzamento de Dependências Atuais
     if (entrada.sinais.dependencias) {
       for (const depPattern of entrada.sinais.dependencias) {
         for (const dep of todasDependencias) {
@@ -100,6 +118,30 @@ export async function cruzarComCatalogo(
               tipo: 'dependencia',
               valor: `${dep.name}@${dep.version}`,
               arquivo: dep.file,
+            });
+          }
+        }
+      }
+    }
+
+    // 1.1 Cruzamento de Dependências Obsoletas (SPEC.md Seções 5.3 e 9)
+    if (entrada.sinais.dependenciasObsoletas) {
+      for (const itemObsoleto of entrada.sinais.dependenciasObsoletas) {
+        const nomeObsoleto = typeof itemObsoleto === 'string' ? itemObsoleto : itemObsoleto.nome;
+        const dataDescontinuacao = typeof itemObsoleto === 'object' ? itemObsoleto.data : undefined;
+        const motivo = typeof itemObsoleto === 'object' ? itemObsoleto.motivo : undefined;
+
+        for (const dep of todasDependencias) {
+          if (dep.name === nomeObsoleto || (nomeObsoleto.endsWith('*') && dep.name.startsWith(nomeObsoleto.slice(0, -1)))) {
+            sinaisEncontrados.push({
+              tipo: 'dependencia',
+              valor: `${dep.name}@${dep.version} (obsoleto)`,
+              arquivo: dep.file,
+            });
+            alertasMapeados.push({
+              tipo: 'obsoleto',
+              servico: entrada.id,
+              mensagem: `Usa pacote obsoleto/descontinuado '${dep.name}'${dataDescontinuacao ? ` (descontinuado em ${dataDescontinuacao})` : ''}${motivo ? `: ${motivo}` : '.'}`,
             });
           }
         }
@@ -216,5 +258,6 @@ export async function cruzarComCatalogo(
     servicos: servicosCruzados,
     variaveis: variaveisMapeadas,
     naoCatalogados,
+    alertas: alertasMapeados,
   };
 }
