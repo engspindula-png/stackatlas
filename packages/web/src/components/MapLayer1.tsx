@@ -12,6 +12,60 @@ interface MapLayer1Props {
 }
 
 /**
+ * Retorna uma descrição em uma frase curta sem código (SPEC.md Seção 9, Camada 4).
+ */
+export function obterDescricaoConexao(servico: ServicoFicha): string {
+  const sId = (servico.id || '').toLowerCase();
+  const cat = (servico.categoria || '').toLowerCase();
+  const sub = (servico.subcategoria || '').toLowerCase();
+
+  const DESCRICOES: Record<string, string> = {
+    supabase: 'Conecta ao banco de dados relacional e backend como serviço em nuvem.',
+    turso: 'Conecta ao banco de dados SQLite distribuído na borda via LibSQL.',
+    anthropic: 'Conecta à API de modelos de inteligência artificial Claude.',
+    openai: 'Conecta aos modelos de linguagem GPT e embeddings em nuvem.',
+    gemini: 'Conecta aos modelos multimodais de inteligência artificial do Google.',
+    openrouter: 'Conecta ao roteador unificado de modelos de IA com tarifação flexível.',
+    'vercel-ai-sdk': 'Integra o framework unificado para streaming e modelos de IA da Vercel.',
+    huggingface: 'Conecta ao hub de modelos abertos e inferência da Hugging Face.',
+    together: 'Conecta à nuvem de inferência rápida para modelos abertos.',
+    resend: 'Envia e-mails transacionais modernos a partir da aplicação web.',
+    sendgrid: 'Conecta à plataforma de entrega e envio massivo de e-mails.',
+    postmark: 'Envia e-mails transacionais rápidos com alta taxa de entrega.',
+    mailgun: 'Conecta à API de envio, recebimento e rastreamento de e-mails.',
+    'amazon-ses': 'Envia e-mails transacionais e marketing pela infraestrutura da AWS.',
+    'smtp-generico': 'Envia mensagens através de servidor de e-mail SMTP padrão.',
+    neon: 'Conecta ao banco de dados PostgreSQL serverless com escalonamento automático.',
+    'cloudflare-d1': 'Conecta ao banco de dados SQL serverless integrado no Cloudflare Workers.',
+    mongodb: 'Conecta ao banco de dados NoSQL de documentos em nuvem.',
+    upstash: 'Conecta à camada de cache Redis e filas serverless de baixa latência.',
+    convex: 'Conecta ao backend reativo em tempo real para sincronização de dados.',
+    firebase: 'Conecta ao backend gerenciado pelo Google com autenticação e banco em nuvem.',
+    appwrite: 'Conecta ao backend de código aberto com autenticação e banco.',
+    pocketbase: 'Conecta ao backend integrado em arquivo único com SQLite em tempo real.',
+  };
+
+  if (DESCRICOES[sId]) {
+    return DESCRICOES[sId];
+  }
+
+  if (cat.includes('banco') || sub.includes('sql') || sub.includes('nosql')) {
+    return `Conecta ao banco de dados em nuvem (${servico.nome}).`;
+  }
+  if (cat.includes('ia') || sub.includes('llm')) {
+    return `Conecta aos serviços de inteligência artificial da ${servico.nome}.`;
+  }
+  if (cat.includes('email')) {
+    return `Envia mensagens através do serviço de e-mail ${servico.nome}.`;
+  }
+  if (cat.includes('backend') || sub.includes('baas')) {
+    return `Conecta aos serviços de infraestrutura de backend da ${servico.nome}.`;
+  }
+
+  return `Conecta a aplicação ao serviço externo ${servico.nome}.`;
+}
+
+/**
  * Verifica se um serviço possui dependências obsoletas catalogadas ou alertas de obsolescência.
  */
 export function verificarServicoObsoleto(
@@ -76,6 +130,8 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
   aoClicarConexao,
 }) => {
   const [servicoHover, setServicoHover] = useState<string | null>(null);
+  const [conexaoAtiva, setConexaoAtiva] = useState<ConexaoDetalheInfo | null>(null);
+  const [modalModulosAberto, setModalModulosAberto] = useState<boolean>(false);
 
   const cx = 450;
   const cy = 300;
@@ -139,15 +195,73 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
   }
 
   // Verifica se o nó de agrupamento deve ser renderizado
-  const temNoAgrupado = servicosAgrupados.length > 0 || (ficha.modulosInternos && ficha.modulosInternos > 0);
+  const temNoAgrupado = servicosAgrupados.length > 0 || (ficha.modulosInternos && ficha.modulosInternos > 0) || (ficha.naoIdentificados && ficha.naoIdentificados.length > 0);
   const totalNosNoAnel = servicosVisiveis.length + (temNoAgrupado ? 1 : 0);
 
   // Alerta interno: se houver alerta nos módulos internos ou alertas de tecnologia não catalogada
   const alertaModuloInterno = alertas.some((a) => a.tipo === 'obsoleto' && !servicosVisiveis.some((sv) => sv.servico.id === a.servico));
 
   const repoNome = ficha.repo.url.replace(/https?:\/\/github\.com\//, '').replace(/\.git$/, '');
-
   const idOuNomeAtivo = servicoSelecionado?.id || servicoSelecionado?.nome || servicoHover;
+
+  // Handler para cliques nas conexões (Camada 4)
+  const tratarCliqueConexao = (detalhe: ConexaoDetalheInfo) => {
+    setConexaoAtiva(detalhe);
+    if (aoClicarConexao) {
+      aoClicarConexao(detalhe);
+    }
+  };
+
+  // Handler para abrir Camada 3 (Módulos Internos)
+  const tratarCliqueModulos = () => {
+    setModalModulosAberto(true);
+    if (aoClicarModulosInternos) {
+      aoClicarModulosInternos(servicosAgrupados.map((s) => s.servico));
+    }
+  };
+
+  // Agrupamento para Monorepo na Camada 3:
+  // Separa pacotes/serviços por pasta de origem (ex: packages/core, packages/web, apps/...)
+  const subgruposMonorepo: Record<string, { servicos: ServicoFicha[]; tecnologias: string[] }> = {};
+
+  const extrairSubgrupo = (arquivo: string): string => {
+    const limpo = arquivo.replace(/\\/g, '/');
+    const partes = limpo.split('/');
+    if (partes.length > 1 && (partes[0] === 'packages' || partes[0] === 'apps' || partes[0] === 'modules')) {
+      return `${partes[0]}/${partes[1]}`;
+    }
+    return 'Raiz do Repositório';
+  };
+
+  // Adiciona serviços agrupados
+  for (const item of servicosAgrupados) {
+    const s = item.servico;
+    const arq = s.sinais[0]?.arquivo || 'package.json';
+    const subgrupo = extrairSubgrupo(arq);
+    if (!subgruposMonorepo[subgrupo]) {
+      subgruposMonorepo[subgrupo] = { servicos: [], tecnologias: [] };
+    }
+    subgruposMonorepo[subgrupo].servicos.push(s);
+  }
+
+  // Adiciona tecnologias detectadas não catalogadas
+  for (const nc of ficha.naoIdentificados || []) {
+    const subgrupo = extrairSubgrupo(nc.arquivo || 'package.json');
+    if (!subgruposMonorepo[subgrupo]) {
+      subgruposMonorepo[subgrupo] = { servicos: [], tecnologias: [] };
+    }
+    if (!subgruposMonorepo[subgrupo].tecnologias.includes(nc.sinal)) {
+      subgruposMonorepo[subgrupo].tecnologias.push(nc.sinal);
+    }
+  }
+
+  // Se nada foi agrupado ainda mas há módulos internos declarados
+  if (Object.keys(subgruposMonorepo).length === 0) {
+    subgruposMonorepo['Módulos Internos'] = {
+      servicos: [],
+      tecnologias: ['Módulos locais detectados pelo analisador de dependências'],
+    };
+  }
 
   return (
     <div className="map-layer-wrapper">
@@ -229,13 +343,10 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
           strokeDasharray="4,4"
         />
 
-        {/* 1. Conexões dos Serviços Visíveis */}
+        {/* 1. Conexões dos Serviços Visíveis (Camada 4: Clicáveis) */}
         {servicosVisiveis.map((item, index: number) => {
           const s = item.servico;
           const angulo = (2 * Math.PI * index) / (totalNosNoAnel || 1) - Math.PI / 2;
-          const x = cx + raio * Math.cos(angulo);
-          const y = cy + raio * Math.sin(angulo);
-
           const startDist = 65;
           const endDist = raio - 52;
           const startX = cx + startDist * Math.cos(angulo);
@@ -258,25 +369,23 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
           const rotulo = ehObsoleto ? 'OBSOLETO' : (s.categoria ? s.categoria.toUpperCase() : 'SERVIÇO');
           const isAtivo = idOuNomeAtivo === (s.id || s.nome);
 
+          const detalheConexao: ConexaoDetalheInfo = {
+            de: 'Projeto Principal',
+            para: s.nome,
+            rotulo,
+            descricao: ehObsoleto
+              ? `Atenção: A biblioteca utilizada para conexão com ${s.nome} está obsoleta/descontinuada.`
+              : obterDescricaoConexao(s),
+            confianca: s.confianca,
+            obsoleto: ehObsoleto,
+          };
+
           return (
             <g
               key={`conn-${index}`}
               className="connection-group"
               style={{ cursor: 'pointer' }}
-              onClick={() => {
-                if (aoClicarConexao) {
-                  aoClicarConexao({
-                    de: 'Projeto Principal',
-                    para: s.nome,
-                    rotulo,
-                    descricao: ehObsoleto
-                      ? `Aviso: Conexão com ${s.nome} utiliza biblioteca obsoleta. Atualização necessária.`
-                      : `Conecta ao serviço ${s.nome} (${s.subcategoria || s.categoria}) com nível de confiança ${s.confianca}.`,
-                    confianca: s.confianca,
-                    obsoleto: ehObsoleto,
-                  });
-                }
-              }}
+              onClick={() => tratarCliqueConexao(detalheConexao)}
             >
               {/* Linha da Seta: Vermelha se OBSOLETO, Tracejada se PROVÁVEL, Sólida se CERTO */}
               <line
@@ -285,7 +394,7 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
                 x2={endX}
                 y2={endY}
                 stroke={strokeColor}
-                strokeWidth={ehObsoleto ? 2.5 : 2}
+                strokeWidth={ehObsoleto ? 3 : 2}
                 strokeDasharray={ehObsoleto ? 'none' : (ehCerto ? 'none' : '6,6')}
                 markerEnd={markerId}
                 opacity={idOuNomeAtivo && !isAtivo ? 0.25 : 0.9}
@@ -337,16 +446,21 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
           const strokeColor = alertaModuloInterno ? '#ef4444' : '#8b5cf6';
           const markerId = alertaModuloInterno ? 'url(#arrow-obsoleto)' : 'url(#arrow-modulo)';
 
+          const detalheModulo: ConexaoDetalheInfo = {
+            de: 'Projeto Principal',
+            para: 'Módulos Internos',
+            rotulo: 'INTERNO',
+            descricao: 'Conecta aos módulos internos, workspaces e pacotes locais do repositório.',
+            confianca: 'certo',
+            obsoleto: alertaModuloInterno,
+          };
+
           return (
             <g
               key="conn-modulos-internos"
               className="connection-group"
               style={{ cursor: 'pointer' }}
-              onClick={() => {
-                if (aoClicarModulosInternos) {
-                  aoClicarModulosInternos(servicosAgrupados.map((s) => s.servico));
-                }
-              }}
+              onClick={() => tratarCliqueConexao(detalheModulo)}
             >
               <line
                 x1={startX}
@@ -429,7 +543,7 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
           </text>
         </g>
 
-        {/* Nós dos Serviços Visíveis */}
+        {/* Nós dos Serviços Visíveis (Camada 1 e Camada 2: Clique foca serviço) */}
         {servicosVisiveis.map((item, index: number) => {
           const s = item.servico;
           const angulo = (2 * Math.PI * index) / (totalNosNoAnel || 1) - Math.PI / 2;
@@ -557,7 +671,7 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
           );
         })}
 
-        {/* Nó Especial: "Módulos Internos" (Agrupamento dos excedentes) */}
+        {/* Nó Especial: "Módulos Internos" (Camada 3: Clique abre expansão de grupos) */}
         {temNoAgrupado && (() => {
           const index = servicosVisiveis.length;
           const angulo = (2 * Math.PI * index) / (totalNosNoAnel || 1) - Math.PI / 2;
@@ -572,12 +686,9 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
               key="node-modulos-internos"
               className="service-node-group internal-modules-node"
               transform={`translate(${x}, ${y})`}
-              onClick={() => {
-                if (aoClicarModulosInternos) {
-                  aoClicarModulosInternos(servicosAgrupados.map((s) => s.servico));
-                }
-              }}
+              onClick={tratarCliqueModulos}
               style={{ cursor: 'pointer' }}
+              title="Clique para expandir a Camada 3 (Detalhes dos Módulos Internos)"
             >
               <rect
                 x="-65"
@@ -651,6 +762,165 @@ export const MapLayer1: React.FC<MapLayer1Props> = ({
           );
         })()}
       </svg>
+
+      {/* Camada 4: Card Flutuante / Tooltip ao clicar em uma seta */}
+      {conexaoAtiva && (
+        <div className="floating-connection-overlay" role="dialog" aria-label="Detalhes da Conexão">
+          <button
+            className="floating-close-btn"
+            onClick={() => setConexaoAtiva(null)}
+            aria-label="Fechar detalhes da conexão"
+          >
+            &times;
+          </button>
+          <div className="floating-title">
+            <span style={{ color: conexaoAtiva.obsoleto ? '#ef4444' : '#60a5fa' }}>➔</span>
+            <span>{conexaoAtiva.de} &rarr; {conexaoAtiva.para}</span>
+          </div>
+          <p className="floating-desc">
+            &ldquo;{conexaoAtiva.descricao}&rdquo;
+          </p>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <span
+              className="floating-meta-badge"
+              style={{
+                backgroundColor:
+                  conexaoAtiva.obsoleto
+                    ? 'rgba(239, 68, 68, 0.2)'
+                    : conexaoAtiva.confianca === 'certo'
+                    ? 'rgba(16, 185, 129, 0.2)'
+                    : 'rgba(245, 158, 11, 0.2)',
+                color:
+                  conexaoAtiva.obsoleto
+                    ? '#ef4444'
+                    : conexaoAtiva.confianca === 'certo'
+                    ? '#10b981'
+                    : '#f59e0b',
+                border: `1px solid ${
+                  conexaoAtiva.obsoleto
+                    ? 'rgba(239, 68, 68, 0.4)'
+                    : conexaoAtiva.confianca === 'certo'
+                    ? 'rgba(16, 185, 129, 0.4)'
+                    : 'rgba(245, 158, 11, 0.4)'
+                }`,
+              }}
+            >
+              {conexaoAtiva.obsoleto
+                ? 'ALERTA: OBSOLETO'
+                : `CONFIANÇA: ${conexaoAtiva.confianca.toUpperCase()}`}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Camada 3: Modal de Expansão de Módulos Internos (com Subgrupos de Monorepo) */}
+      {modalModulosAberto && (
+        <div
+          className="modal-overlay"
+          onClick={() => setModalModulosAberto(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title">
+                <span>📦</span>
+                <span>Camada 3: Expansão de Módulos Internos</span>
+              </div>
+              <button
+                className="floating-close-btn"
+                style={{ position: 'static' }}
+                onClick={() => setModalModulosAberto(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                Detalhamento dos pacotes locais, tecnologias internas e serviços agrupados por pasta ou workspace do repositório:
+              </p>
+
+              {Object.entries(subgruposMonorepo).map(([subgrupo, dados], sIdx) => (
+                <div key={sIdx} className="subgroup-card">
+                  <div className="subgroup-title">
+                    <span>📁 {subgrupo}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-dim)', fontWeight: 400 }}>
+                      {dados.servicos.length} serviço(s) &bull; {dados.tecnologias.length} tecnologia(s)
+                    </span>
+                  </div>
+
+                  {/* Serviços agrupados neste subgrupo */}
+                  {dados.servicos.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--text-dim)', fontWeight: 600 }}>
+                        Serviços Externos no Subgrupo:
+                      </span>
+                      {dados.servicos.map((serv, servIdx) => (
+                        <div
+                          key={servIdx}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            backgroundColor: 'rgba(0, 0, 0, 0.25)',
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            border: '1px solid var(--border-color)',
+                          }}
+                        >
+                          <div>
+                            <strong style={{ fontSize: '13px', color: '#fff' }}>{serv.nome}</strong>
+                            <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>
+                              ({serv.categoria})
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setModalModulosAberto(false);
+                              if (aoSelecionarServico) {
+                                aoSelecionarServico(serv);
+                              }
+                            }}
+                            style={{
+                              backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                              color: '#93c5fd',
+                              border: '1px solid rgba(59, 130, 246, 0.3)',
+                              padding: '4px 8px',
+                              borderRadius: '4px',
+                              fontSize: '11px',
+                              cursor: 'pointer',
+                              fontWeight: 600,
+                            }}
+                          >
+                            Ver detalhes ↗
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Tecnologias gerais / pacotes detectados */}
+                  {dados.tecnologias.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--text-dim)', fontWeight: 600 }}>
+                        Pacotes e Bibliotecas:
+                      </span>
+                      <div className="tech-tags-grid">
+                        {dados.tecnologias.map((tech, tIdx) => (
+                          <span key={tIdx} className="tech-tag">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Legenda do Mapa */}
       <div className="map-legend">
