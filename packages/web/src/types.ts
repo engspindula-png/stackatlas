@@ -1,0 +1,82 @@
+export type TipoSinal = 'configuracao' | 'dependencia' | 'variavel' | 'host';
+
+export interface SinalFicha {
+  tipo: TipoSinal;
+  valor: string;
+  arquivo: string;
+}
+
+export interface ServicoFicha {
+  id: string | null;
+  nome: string;
+  categoria: string;
+  subcategoria: string;
+  confianca: 'certo' | 'provavel';
+  catalogado: boolean;
+  sinais: SinalFicha[];
+}
+
+export interface VariavelFicha {
+  nome: string;
+  idServico: string | null;
+  arquivo: string;
+  obrigatoria: boolean | null;
+  descricao: string;
+}
+
+export interface ConexaoFicha {
+  de: string;
+  para: string;
+  rotulo: string;
+}
+
+export interface NaoIdentificadoFicha {
+  sinal: string;
+  arquivo: string;
+  motivo: string;
+}
+
+export interface AlertaFicha {
+  tipo: 'obsoleto' | 'local' | 'duplicado';
+  servico: string;
+  mensagem: string;
+}
+
+export interface Ficha {
+  schemaVersion: number;
+  repo: {
+    url: string;
+    commit: string;
+    branch: string;
+    visibilidade: 'publico' | 'privado';
+  };
+  analisadoEm: string;
+  detector: {
+    nome: string;
+    versao: string;
+    versaoRegrasProprias: string;
+  };
+  servicos: ServicoFicha[];
+  variaveis: VariavelFicha[];
+  conexoes?: ConexaoFicha[];
+  naoIdentificados: NaoIdentificadoFicha[];
+  modulosInternos: number;
+  alertas: AlertaFicha[];
+}
+
+export interface ItemFichaSalva {
+  arquivo: string;
+  dono: string;
+  repo: string;
+  commit: string;
+  analisadoEm: string;
+  servicosQtd: number;
+  tecnologiasQtd: number;
+  ficha: Ficha;
+}
+
+export interface RespostaFichasApi {
+  total: number;
+  diretorio: string;
+  fichas: ItemFichaSalva[];
+}
