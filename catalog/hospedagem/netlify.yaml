@@ -1,0 +1,39 @@
+id: netlify
+nome: Netlify
+categoria: hospedagem
+subcategoria: serverless-paas
+site: https://www.netlify.com
+cadastro: https://app.netlify.com/signup
+icone: netlify
+sinais:
+  configuracao:
+    - netlify.toml
+    - .netlify
+  dependencias:
+    - "@netlify/functions"
+    - "@netlify/plugin-nextjs"
+    - netlify-cli
+  dependenciasObsoletas: []
+  variaveis:
+    - NETLIFY
+    - NETLIFY_AUTH_TOKEN
+    - NETLIFY_SITE_ID
+    - DEPLOY_URL
+    - URL
+    - CONTEXT
+  hosts:
+    - "*.netlify.app"
+  chaves: []
+teste:
+  nivel1:
+    metodo: GET
+    url: https://www.netlify.com
+    dominiosPermitidos:
+      - netlify.com
+    regra: alcance_dns
+alternativas:
+  - vercel
+  - cloudflare-pages
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.netlify.com

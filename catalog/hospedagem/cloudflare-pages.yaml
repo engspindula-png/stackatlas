@@ -1,0 +1,39 @@
+id: cloudflare-pages
+nome: Cloudflare Pages
+categoria: hospedagem
+subcategoria: jamstack-edge
+site: https://pages.cloudflare.com
+cadastro: https://dash.cloudflare.com/sign-up
+icone: cloudflare
+sinais:
+  configuracao:
+    - wrangler.toml
+    - wrangler.jsonc
+    - _headers
+    - _redirects
+  dependencias:
+    - "@cloudflare/workers-types"
+    - "@cloudflare/next-on-pages"
+    - wrangler
+  dependenciasObsoletas: []
+  variaveis:
+    - CF_PAGES
+    - CF_PAGES_COMMIT_SHA
+    - CF_PAGES_BRANCH
+    - CF_PAGES_URL
+  hosts:
+    - "*.pages.dev"
+  chaves: []
+teste:
+  nivel1:
+    metodo: GET
+    url: https://pages.cloudflare.com
+    dominiosPermitidos:
+      - cloudflare.com
+    regra: alcance_dns
+alternativas:
+  - vercel
+  - netlify
+verificadoEm: "2026-11-06"
+fontes:
+  - https://developers.cloudflare.com/pages

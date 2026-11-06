@@ -1,0 +1,43 @@
+id: vercel
+nome: Vercel
+categoria: hospedagem
+subcategoria: serverless-paas
+site: https://vercel.com
+cadastro: https://vercel.com/signup
+icone: vercel
+sinais:
+  configuracao:
+    - vercel.json
+    - .vercel
+  dependencias:
+    - "@vercel/analytics"
+    - "@vercel/speed-insights"
+    - "@vercel/og"
+    - "@vercel/blob"
+    - "@vercel/kv"
+    - "@vercel/edge"
+    - vercel
+  dependenciasObsoletas: []
+  variaveis:
+    - VERCEL
+    - VERCEL_ENV
+    - VERCEL_URL
+    - VERCEL_GIT_COMMIT_SHA
+    - VERCEL_PROJECT_ID
+    - VERCEL_ORG_ID
+  hosts:
+    - "*.vercel.app"
+  chaves: []
+teste:
+  nivel1:
+    metodo: GET
+    url: https://vercel.com
+    dominiosPermitidos:
+      - vercel.com
+    regra: alcance_dns
+alternativas:
+  - netlify
+  - cloudflare-pages
+verificadoEm: "2026-11-06"
+fontes:
+  - https://vercel.com/docs

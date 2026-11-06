@@ -1,0 +1,42 @@
+id: clerk
+nome: Clerk
+categoria: autenticacao
+subcategoria: identity-provider
+site: https://clerk.com
+cadastro: https://dashboard.clerk.com/sign-up
+icone: clerk
+sinais:
+  configuracao: []
+  dependencias:
+    - "@clerk/nextjs"
+    - "@clerk/clerk-react"
+    - "@clerk/clerk-sdk-node"
+    - "@clerk/backend"
+  dependenciasObsoletas: []
+  variaveis:
+    - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+    - CLERK_SECRET_KEY
+    - CLERK_PUBLISHABLE_KEY
+    - NEXT_PUBLIC_CLERK_SIGN_IN_URL
+    - NEXT_PUBLIC_CLERK_SIGN_UP_URL
+  hosts:
+    - "*.clerk.accounts.dev"
+    - api.clerk.com
+  chaves:
+    - pk_test_
+    - sk_test_
+    - pk_live_
+    - sk_live_
+teste:
+  nivel1:
+    metodo: GET
+    url: https://api.clerk.com/v1/health
+    dominiosPermitidos:
+      - clerk.com
+    regra: alcance_dns
+alternativas:
+  - auth0
+  - supabase
+verificadoEm: "2026-11-06"
+fontes:
+  - https://clerk.com/docs

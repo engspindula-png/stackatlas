@@ -1,0 +1,39 @@
+id: paypal
+nome: PayPal
+categoria: pagamentos
+subcategoria: gateway
+site: https://www.paypal.com
+cadastro: https://www.paypal.com/bizsignup
+icone: paypal
+sinais:
+  configuracao: []
+  dependencias:
+    - "@paypal/checkout-server-sdk"
+    - "@paypal/react-paypal-js"
+    - "@paypal/paypal-js"
+  dependenciasObsoletas:
+    - nome: paypal-rest-sdk
+      motivo: SDK legado descontinuado pela PayPal. Use @paypal/checkout-server-sdk
+  variaveis:
+    - PAYPAL_CLIENT_ID
+    - PAYPAL_CLIENT_SECRET
+    - NEXT_PUBLIC_PAYPAL_CLIENT_ID
+    - PAYPAL_MODE
+    - PAYPAL_ENVIRONMENT
+  hosts:
+    - api-m.paypal.com
+    - api-m.sandbox.paypal.com
+  chaves: []
+teste:
+  nivel1:
+    metodo: GET
+    url: https://api-m.paypal.com/v1/oauth2/token
+    dominiosPermitidos:
+      - paypal.com
+    regra: alcance_dns
+alternativas:
+  - stripe
+  - mercadopago
+verificadoEm: "2026-11-06"
+fontes:
+  - https://developer.paypal.com/docs

@@ -1,0 +1,46 @@
+id: stripe
+nome: Stripe
+categoria: pagamentos
+subcategoria: gateway
+site: https://stripe.com
+cadastro: https://dashboard.stripe.com/register
+icone: stripe
+sinais:
+  configuracao: []
+  dependencias:
+    - stripe
+    - "@stripe/stripe-js"
+    - "@stripe/react-stripe-js"
+  dependenciasObsoletas: []
+  variaveis:
+    - STRIPE_SECRET_KEY
+    - STRIPE_PUBLISHABLE_KEY
+    - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    - STRIPE_WEBHOOK_SECRET
+    - STRIPE_SECRET_KEY_LIVE
+    - NEXT_PUBLIC_STRIPE_IS_PERSISTABLE
+    - STRIPE_CURRENCY
+    - STRIPE_
+  hosts:
+    - api.stripe.com
+    - m.stripe.network
+  chaves:
+    - sk_test_
+    - pk_test_
+    - rk_test_
+    - whsec_
+    - sk_live_
+    - pk_live_
+teste:
+  nivel1:
+    metodo: GET
+    url: https://api.stripe.com/v1/charges
+    dominiosPermitidos:
+      - stripe.com
+    regra: alcance_dns
+alternativas:
+  - mercadopago
+  - paypal
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.stripe.com

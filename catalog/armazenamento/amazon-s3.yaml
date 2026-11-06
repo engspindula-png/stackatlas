@@ -1,0 +1,40 @@
+id: amazon-s3
+nome: Amazon S3
+categoria: armazenamento
+subcategoria: object-storage
+site: https://aws.amazon.com/s3/
+cadastro: https://portal.aws.amazon.com/signup
+icone: amazons3
+sinais:
+  configuracao: []
+  dependencias:
+    - "@aws-sdk/client-s3"
+    - "@aws-sdk/s3-request-presigner"
+  dependenciasObsoletas:
+    - nome: aws-sdk
+      data: "2025-09-08"
+      motivo: AWS SDK v2 em fim de vida. Migre para @aws-sdk/client-s3
+  variaveis:
+    - AWS_S3_BUCKET
+    - AWS_BUCKET_NAME
+    - S3_BUCKET_NAME
+    - AWS_REGION
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    - S3_ENDPOINT
+  hosts:
+    - "*.s3.amazonaws.com"
+    - "s3.*.amazonaws.com"
+  chaves: []
+teste:
+  nivel1:
+    metodo: GET
+    url: https://s3.amazonaws.com
+    dominiosPermitidos:
+      - amazonaws.com
+    regra: alcance_dns
+alternativas:
+  - cloudflare-r2
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.aws.amazon.com/s3

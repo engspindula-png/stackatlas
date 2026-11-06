@@ -1,0 +1,38 @@
+id: mercadopago
+nome: Mercado Pago
+categoria: pagamentos
+subcategoria: gateway
+site: https://www.mercadopago.com
+cadastro: https://www.mercadopago.com.br/hub/registration
+icone: mercadopago
+sinais:
+  configuracao: []
+  dependencias:
+    - mercadopago
+    - "@mercadopago/sdk-react"
+    - "@mercadopago/sdk-js"
+  dependenciasObsoletas: []
+  variaveis:
+    - MERCADOPAGO_ACCESS_TOKEN
+    - MP_ACCESS_TOKEN
+    - MERCADOPAGO_PUBLIC_KEY
+    - MP_PUBLIC_KEY
+    - NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY
+  hosts:
+    - api.mercadopago.com
+  chaves:
+    - APP_USR-
+    - TEST-
+teste:
+  nivel1:
+    metodo: GET
+    url: https://api.mercadopago.com/v1/payment_methods
+    dominiosPermitidos:
+      - mercadopago.com
+    regra: alcance_dns
+alternativas:
+  - stripe
+  - paypal
+verificadoEm: "2026-11-06"
+fontes:
+  - https://www.mercadopago.com/developers
