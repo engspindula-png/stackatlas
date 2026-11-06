@@ -10,7 +10,8 @@
   "scripts": {
     "build": "npm run --workspaces --if-present build",
     "test": "npm run --workspaces --if-present test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "stackatlas": "node ./packages/core/bin/stackatlas.js"
   },
   "devDependencies": {
     "@types/node": "^20.19.2",

@@ -5,3 +5,5 @@ export * from './detector.js';
 export * from './configReader.js';
 export * from './matcher.js';
 export * from './fichaRecorder.js';
+export * from './server.js';
+export * from './cli.js';
