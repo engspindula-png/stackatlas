@@ -10,3 +10,7 @@ tmp/
 coverage/
 spike/repos/
 spike/node_modules/
+fixtures/nextjs-subscription-payments/
+fixtures/openstatus/
+fixtures/taxonomy/
+fixtures/nextjs-template-mongodb/
