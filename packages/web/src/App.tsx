@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { obterFichas } from './api.js';
 import { Sidebar } from './components/Sidebar.js';
+import { MapLayer1 } from './components/MapLayer1.js';
 import type { ItemFichaSalva, Ficha } from './types.js';
 
 export const App: React.FC = () => {
@@ -82,17 +83,11 @@ export const App: React.FC = () => {
               <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{erro}</p>
               <p style={{ color: 'var(--text-dim)', fontSize: '12px' }}>Certifique-se de que o servidor local está rodando em <code>127.0.0.1:4173</code>.</p>
             </div>
+          ) : fichaAtiva ? (
+            <MapLayer1 ficha={fichaAtiva} />
           ) : (
-            <div id="map-container" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {/* O mapa da Camada 1 será montado aqui na Tarefa 12 */}
-              <div style={{ textAlign: 'center', color: 'var(--text-dim)' }}>
-                <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px' }}>
-                  Visualização da Camada 1
-                </p>
-                <p style={{ fontSize: '13px' }}>
-                  {fichaAtiva ? `${fichaAtiva.servicos.length} serviço(s) catalogado(s) identificado(s)` : 'Selecione uma ficha'}
-                </p>
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
+              <p>Nenhuma ficha selecionada.</p>
             </div>
           )}
         </main>
