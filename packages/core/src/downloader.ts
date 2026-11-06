@@ -10,6 +10,7 @@ const execFileAsync = promisify(execFile);
 export interface CloneRepoOptions {
   branch?: string;
   timeoutMs?: number;
+  token?: string;
 }
 
 export interface ClonedRepoInfo {
@@ -17,6 +18,40 @@ export interface ClonedRepoInfo {
   commit: string;
   branch: string;
   cleanup: () => Promise<void>;
+}
+
+/**
+ * Substitui com segurança qualquer ocorrência do token por '***' para impedir vazamento em logs ou erros.
+ */
+export function mascararToken(texto: string, token?: string): string {
+  const t = (token || process.env.GITHUB_TOKEN || '').trim();
+  if (!t || !texto) return texto;
+  return texto.split(t).join('***');
+}
+
+/**
+ * Se houver GITHUB_TOKEN (via parâmetro ou variável de ambiente), injeta de forma segura na URL do GitHub.
+ */
+export function injetarTokenGitHub(
+  repoUrl: string,
+  token?: string
+): { urlClone: string; urlMascarada: string } {
+  const gitHubToken = (token || process.env.GITHUB_TOKEN || '').trim();
+  if (!gitHubToken) {
+    return { urlClone: repoUrl, urlMascarada: repoUrl };
+  }
+
+  // Verifica se a URL é do GitHub via HTTPS
+  const regexGitHub = /^https?:\/\/(?:[^@:]+(?::[^@]*)?@)?github\.com\/(.+)$/i;
+  const match = repoUrl.match(regexGitHub);
+  if (match) {
+    const caminhoRepo = match[1];
+    const urlClone = `https://${gitHubToken}@github.com/${caminhoRepo}`;
+    const urlMascarada = `https://***@github.com/${caminhoRepo}`;
+    return { urlClone, urlMascarada };
+  }
+
+  return { urlClone: repoUrl, urlMascarada: repoUrl };
 }
 
 /**
@@ -36,7 +71,8 @@ export async function removeDirectory(dirPath: string): Promise<void> {
 }
 
 /**
- * Clona um repositório Git público de forma rasa (--depth 1) em pasta temporária.
+ * Clona um repositório Git (público ou privado) de forma rasa (--depth 1) em pasta temporária.
+ * Suporta autenticação via GITHUB_TOKEN e mascara rigorosamente tokens em caso de erro.
  * Extrai o hash completo do commit e o nome da branch.
  */
 export async function cloneShallowRepo(
@@ -48,11 +84,14 @@ export async function cloneShallowRepo(
     `stackatlas-${crypto.randomUUID()}`
   );
 
+  const tokenEfetivo = (options.token || process.env.GITHUB_TOKEN || '').trim();
+  const { urlClone } = injetarTokenGitHub(repoUrl, tokenEfetivo);
+
   const cloneArgs = ['clone', '--depth', '1'];
   if (options.branch) {
     cloneArgs.push('--branch', options.branch);
   }
-  cloneArgs.push(repoUrl, tempDir);
+  cloneArgs.push(urlClone, tempDir);
 
   const execOptions = {
     timeout: options.timeoutMs ?? 60_000,
@@ -94,9 +133,26 @@ export async function cloneShallowRepo(
       branch,
       cleanup,
     };
-  } catch (error) {
-    // Se falhar durante o clone, garante a limpeza da pasta se tiver sido criada
+  } catch (error: any) {
+    // Limpeza da pasta temporária se criada
     await removeDirectory(tempDir);
+
+    // REGRA DE SEGURANÇA CRÍTICA (Seção 8.6):
+    // Mascara o token no erro para garantir que nunca vaze no terminal ou logs
+    if (tokenEfetivo) {
+      if (error && typeof error === 'object') {
+        if (typeof error.message === 'string') {
+          error.message = mascararToken(error.message, tokenEfetivo);
+        }
+        if (typeof error.stderr === 'string') {
+          error.stderr = mascararToken(error.stderr, tokenEfetivo);
+        }
+        if (typeof error.stdout === 'string') {
+          error.stdout = mascararToken(error.stdout, tokenEfetivo);
+        }
+      }
+    }
+
     throw error;
   }
 }
