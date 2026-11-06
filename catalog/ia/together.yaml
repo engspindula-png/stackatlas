@@ -1,0 +1,36 @@
+id: together
+nome: Together AI
+categoria: ia
+subcategoria: inferencia-cloud
+site: https://www.together.ai
+cadastro: https://api.together.ai/signin
+icone: together
+sinais:
+  configuracao: []
+  dependencias:
+    - together-ai
+  dependenciasObsoletas: []
+  variaveis:
+    - TOGETHER_API_KEY
+    - TOGETHERAI_API_KEY
+    - TOGETHER_
+  hosts:
+    - api.together.xyz
+    - api.together.ai
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://api.together.ai
+    dominiosPermitidos:
+      - api.together.ai
+      - api.together.xyz
+      - together.ai
+    regra: alcance_dns
+alternativas:
+  - huggingface
+  - openrouter
+  - openai
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.together.ai

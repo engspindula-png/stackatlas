@@ -1,0 +1,42 @@
+id: openrouter
+nome: OpenRouter
+categoria: ia
+subcategoria: agregador-llm
+site: https://openrouter.ai
+cadastro: https://openrouter.ai/keys
+icone: openrouter
+sinais:
+  configuracao: []
+  dependencias:
+    - "@openrouter/ai-sdk-provider"
+    - openrouter
+  dependenciasObsoletas: []
+  variaveis:
+    - OPENROUTER_API_KEY
+    - OPENROUTER_
+  hosts:
+    - openrouter.ai
+  chaves:
+    - sk-or-v1-
+teste:
+  nivel2:
+    metodo: GET
+    url: https://openrouter.ai
+    dominiosPermitidos:
+      - openrouter.ai
+    regra: alcance_dns
+  nivel3:
+    metodo: GET
+    url: https://openrouter.ai/api/v1/key
+    headers:
+      Authorization: "Bearer {chave}"
+    dominiosPermitidos:
+      - openrouter.ai
+    regra: status_200
+alternativas:
+  - anthropic
+  - openai
+  - together
+verificadoEm: "2026-11-06"
+fontes:
+  - https://openrouter.ai/docs

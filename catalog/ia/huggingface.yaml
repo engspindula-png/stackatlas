@@ -1,0 +1,39 @@
+id: huggingface
+nome: Hugging Face
+categoria: ia
+subcategoria: model-hub
+site: https://huggingface.co
+cadastro: https://huggingface.co/join
+icone: huggingface
+sinais:
+  configuracao: []
+  dependencias:
+    - "@huggingface/inference"
+    - "@huggingface/hub"
+    - "@huggingface/transformers"
+  dependenciasObsoletas: []
+  variaveis:
+    - HF_TOKEN
+    - HUGGINGFACE_API_KEY
+    - HUGGINGFACE_TOKEN
+    - HF_API_KEY
+    - HUGGING_FACE_HUB_TOKEN
+  hosts:
+    - huggingface.co
+    - api-inference.huggingface.co
+  chaves:
+    - hf_
+teste:
+  nivel2:
+    metodo: GET
+    url: https://huggingface.co
+    dominiosPermitidos:
+      - huggingface.co
+      - api-inference.huggingface.co
+    regra: alcance_dns
+alternativas:
+  - together
+  - replicate
+verificadoEm: "2026-11-06"
+fontes:
+  - https://huggingface.co/docs/huggingface.js

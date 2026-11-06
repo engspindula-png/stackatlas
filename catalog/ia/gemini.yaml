@@ -1,0 +1,38 @@
+id: gemini
+nome: Google Gemini
+categoria: ia
+subcategoria: llm
+site: https://ai.google.dev
+cadastro: https://aistudio.google.com
+icone: googlegemini
+sinais:
+  configuracao: []
+  dependencias:
+    - "@google/genai"
+    - "@google/generative-ai"
+  dependenciasObsoletas:
+    - "@google/generative-ai"
+  variaveis:
+    - GEMINI_API_KEY
+    - GOOGLE_AI_API_KEY
+    - GOOGLE_API_KEY
+    - GEMINI_
+  hosts:
+    - generativelanguage.googleapis.com
+  chaves:
+    - AIzaSy
+teste:
+  nivel2:
+    metodo: GET
+    url: https://ai.google.dev
+    dominiosPermitidos:
+      - ai.google.dev
+      - generativelanguage.googleapis.com
+    regra: alcance_dns
+alternativas:
+  - anthropic
+  - openai
+  - openrouter
+verificadoEm: "2026-11-06"
+fontes:
+  - https://ai.google.dev/gemini-api/docs/quickstart

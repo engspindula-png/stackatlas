@@ -1,0 +1,34 @@
+id: vercel-ai-sdk
+nome: Vercel AI SDK
+categoria: ia
+subcategoria: sdk-framework
+site: https://sdk.vercel.ai
+cadastro: https://vercel.com/signup
+icone: vercel
+sinais:
+  configuracao: []
+  dependencias:
+    - ai
+    - "@ai-sdk/openai"
+    - "@ai-sdk/anthropic"
+    - "@ai-sdk/google"
+    - "@ai-sdk/azure"
+    - "@ai-sdk/mistral"
+  dependenciasObsoletas: []
+  variaveis: []
+  hosts:
+    - sdk.vercel.ai
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://sdk.vercel.ai
+    dominiosPermitidos:
+      - sdk.vercel.ai
+      - vercel.com
+    regra: alcance_dns
+alternativas:
+  - langchain
+verificadoEm: "2026-11-06"
+fontes:
+  - https://sdk.vercel.ai/docs/introduction

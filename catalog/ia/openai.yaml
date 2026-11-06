@@ -1,0 +1,35 @@
+id: openai
+nome: OpenAI
+categoria: ia
+subcategoria: llm
+site: https://openai.com
+cadastro: https://platform.openai.com/signup
+icone: openai
+sinais:
+  configuracao: []
+  dependencias:
+    - openai
+  dependenciasObsoletas: []
+  variaveis:
+    - OPENAI_API_KEY
+    - OPENAI_ORG_ID
+    - OPENAI_PROJECT_ID
+    - OPENAI_
+  hosts:
+    - api.openai.com
+  chaves:
+    - sk-
+teste:
+  nivel2:
+    metodo: GET
+    url: https://api.openai.com
+    dominiosPermitidos:
+      - api.openai.com
+    regra: alcance_dns
+alternativas:
+  - anthropic
+  - gemini
+  - openrouter
+verificadoEm: "2026-11-06"
+fontes:
+  - https://platform.openai.com/docs/api-reference
