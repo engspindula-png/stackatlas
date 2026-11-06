@@ -2,7 +2,13 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { obterDiretorioFichasPadrao } from './fichaRecorder.js';
-import { testarServico, type SolicitacaoTesteItem, type ItemTesteResultado } from './tester.js';
+import {
+  testarServico,
+  gravarEstadoLocal,
+  lerEstadoLocal,
+  type SolicitacaoTesteItem,
+  type ItemTesteResultado,
+} from './tester.js';
 import type { Ficha } from '../../../schemas/ficha.js';
 
 export interface ResumoFichaSalva {
@@ -126,14 +132,41 @@ export async function iniciarServidor(options: ServidorOptions = {}): Promise<Se
         }] : []);
 
         const resultados: ItemTesteResultado[] = [];
+        console.log(`[POST /api/testar] Processando ${listaSolicitada.length} teste(s) de conexão...`);
         for (const item of listaSolicitada) {
-          // Segurança (Seção 7.2): nunca loga ou armazena chaves
+          // Segurança (Seção 7.2): chaves em memória, nunca em log
           const resultado = await testarServico(item);
           resultados.push(resultado);
+          console.log(`  - [${resultado.servicoNome}] Nível ${resultado.nivel}: ${resultado.resultado.toUpperCase()} (${resultado.detalhe})`);
+        }
+
+        // Se uma chave de ficha foi informada, persiste no arquivo de estado local
+        let estadoGravado = null;
+        if (payload.chaveFicha) {
+          const resEstado = await gravarEstadoLocal(payload.chaveFicha, resultados);
+          estadoGravado = resEstado.estado;
+          console.log(`  ✓ Estado local atualizado em: ${resEstado.caminho}`);
         }
 
         res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-        res.end(JSON.stringify({ total: resultados.length, resultados }, null, 2));
+        res.end(JSON.stringify({ total: resultados.length, resultados, estado: estadoGravado }, null, 2));
+        return;
+      }
+
+      // Rota GET /api/estado/:chave (consulta estado salvo dos testes da ficha)
+      if (req.method === 'GET' && pathname.startsWith('/api/estado/')) {
+        const chaveRaw = pathname.replace('/api/estado/', '');
+        const chave = path.basename(chaveRaw);
+        const estado = await lerEstadoLocal(chave);
+
+        if (!estado) {
+          res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ erro: `Nenhum estado registrado para a ficha: ${chave}` }));
+          return;
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify(estado, null, 2));
         return;
       }
       // Rota GET / ou GET /health

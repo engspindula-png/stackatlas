@@ -1,4 +1,10 @@
-import type { RespostaFichasApi, ItemFichaSalva, Ficha } from './types.js';
+import type {
+  RespostaFichasApi,
+  ItemFichaSalva,
+  Ficha,
+  RespostaTesteApi,
+  ItemTesteResultado,
+} from './types.js';
 
 const API_BASE = '/api';
 const DIRECT_BACKEND = 'http://127.0.0.1:4173/api';
@@ -8,10 +14,8 @@ const DIRECT_BACKEND = 'http://127.0.0.1:4173/api';
  */
 export async function obterFichas(): Promise<ItemFichaSalva[]> {
   try {
-    // Tenta primeiro através do proxy do Vite (/api/fichas)
     let res = await fetch(`${API_BASE}/fichas`);
     if (!res.ok) {
-      // Fallback para requisição direta ao backend na porta 4173
       res = await fetch(`${DIRECT_BACKEND}/fichas`);
     }
     if (!res.ok) {
@@ -20,7 +24,6 @@ export async function obterFichas(): Promise<ItemFichaSalva[]> {
     const data: RespostaFichasApi = await res.json();
     return data.fichas;
   } catch (err) {
-    // Tenta fallback direto se a rota relativa falhar
     try {
       const res = await fetch(`${DIRECT_BACKEND}/fichas`);
       if (res.ok) {
@@ -48,3 +51,55 @@ export async function obterFichaPorNome(nomeArquivo: string): Promise<Ficha> {
   }
   return await res.json();
 }
+
+/**
+ * Executa testes de conexão via POST /api/testar no servidor local.
+ */
+export async function executarTestesConexao(
+  chaveFicha: string,
+  servicos: Array<{ servicoId: string; nivel?: 1 | 2 | 3; valorChave?: string }>
+): Promise<RespostaTesteApi> {
+  const payload = {
+    chaveFicha,
+    servicos,
+  };
+
+  let res = await fetch(`${API_BASE}/testar`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    res = await fetch(`${DIRECT_BACKEND}/testar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  }
+
+  if (!res.ok) {
+    throw new Error(`Erro ao executar testes: ${res.status} ${res.statusText}`);
+  }
+
+  return await res.json();
+}
+
+/**
+ * Obtém o estado local registrado para uma ficha específica.
+ */
+export async function obterEstadoLocal(chaveFicha: string): Promise<any> {
+  try {
+    let res = await fetch(`${API_BASE}/estado/${encodeURIComponent(chaveFicha)}`);
+    if (!res.ok) {
+      res = await fetch(`${DIRECT_BACKEND}/estado/${encodeURIComponent(chaveFicha)}`);
+    }
+    if (res.ok) {
+      return await res.json();
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+

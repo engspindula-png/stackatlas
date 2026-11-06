@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { obterFichas } from './api.js';
+import { obterFichas, executarTestesConexao, obterEstadoLocal } from './api.js';
 import { Sidebar } from './components/Sidebar.js';
 import { MapLayer1 } from './components/MapLayer1.js';
-import type { ItemFichaSalva, Ficha } from './types.js';
+import type { ItemFichaSalva, Ficha, ItemTesteResultado } from './types.js';
 
 export const App: React.FC = () => {
   const [fichas, setFichas] = useState<ItemFichaSalva[]>([]);
-  const [fichaAtiva, setFichaAtiva] = useState<Ficha | null>(null);
+  const [fichaAtivaItem, setFichaAtivaItem] = useState<ItemFichaSalva | null>(null);
   const [carregando, setCarregando] = useState<boolean>(true);
+  const [testando, setTestando] = useState<boolean>(false);
   const [erro, setErro] = useState<string | null>(null);
+  const [testesEstado, setTestesEstado] = useState<Record<string, ItemTesteResultado>>({});
 
   useEffect(() => {
     async function carregar() {
@@ -18,7 +20,8 @@ export const App: React.FC = () => {
         const lista = await obterFichas();
         setFichas(lista);
         if (lista.length > 0) {
-          setFichaAtiva(lista[0].ficha);
+          setFichaAtivaItem(lista[0]);
+          await carregarEstadoFicha(lista[0].arquivo);
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Falha ao conectar ao servidor local';
@@ -30,13 +33,78 @@ export const App: React.FC = () => {
     carregar();
   }, []);
 
-  const aoMudarFicha = (evento: React.ChangeEvent<HTMLSelectElement>) => {
+  async function carregarEstadoFicha(nomeArquivo: string) {
+    try {
+      const estado = await obterEstadoLocal(nomeArquivo);
+      if (estado && estado.testes) {
+        const mapa: Record<string, ItemTesteResultado> = {};
+        for (const [sId, item] of Object.entries(estado.testes as Record<string, any>)) {
+          mapa[sId] = {
+            servicoId: sId,
+            servicoNome: sId,
+            nivel: item.nivel,
+            resultado: item.resultado,
+            data: item.data,
+            detalhe: item.detalhe,
+          };
+        }
+        setTestesEstado(mapa);
+      } else {
+        setTestesEstado({});
+      }
+    } catch {
+      setTestesEstado({});
+    }
+  }
+
+  const aoMudarFicha = async (evento: React.ChangeEvent<HTMLSelectElement>) => {
     const nomeArquivo = evento.target.value;
     const selecionada = fichas.find((f) => f.arquivo === nomeArquivo);
     if (selecionada) {
-      setFichaAtiva(selecionada.ficha);
+      setFichaAtivaItem(selecionada);
+      await carregarEstadoFicha(selecionada.arquivo);
     }
   };
+
+  const aoTestarConexoes = async (chaveAnthropic?: string) => {
+    if (!fichaAtivaItem) return;
+
+    try {
+      setTestando(true);
+      const servicosParaTestar = fichaAtivaItem.ficha.servicos
+        .filter((s) => s.id)
+        .map((s) => {
+          const sId = s.id!.toLowerCase();
+          if (sId === 'anthropic') {
+            return {
+              servicoId: s.id!,
+              nivel: 3 as const,
+              valorChave: chaveAnthropic || undefined,
+            };
+          }
+          // Para os demais serviços (Supabase, Turso, etc.), roda Nível 2 (alcance)
+          return {
+            servicoId: s.id!,
+            nivel: 2 as const,
+          };
+        });
+
+      const resposta = await executarTestesConexao(fichaAtivaItem.arquivo, servicosParaTestar);
+
+      const novoMapa = { ...testesEstado };
+      for (const res of resposta.resultados) {
+        novoMapa[res.servicoId] = res;
+      }
+      setTestesEstado(novoMapa);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erro ao executar testes';
+      alert(`Falha nos testes de conexão: ${msg}`);
+    } finally {
+      setTestando(false);
+    }
+  };
+
+  const fichaAtiva = fichaAtivaItem?.ficha || null;
 
   return (
     <>
@@ -92,8 +160,14 @@ export const App: React.FC = () => {
           )}
         </main>
 
-        <Sidebar ficha={fichaAtiva} />
+        <Sidebar
+          ficha={fichaAtiva}
+          testesEstado={testesEstado}
+          aoTestar={aoTestarConexoes}
+          testando={testando}
+        />
       </div>
     </>
   );
 };
+

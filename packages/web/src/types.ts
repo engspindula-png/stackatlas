@@ -80,3 +80,33 @@ export interface RespostaFichasApi {
   diretorio: string;
   fichas: ItemFichaSalva[];
 }
+
+export type ResultadoTesteStatus =
+  | 'ok'
+  | 'chave_invalida'
+  | 'sem_permissao'
+  | 'limite'
+  | 'sem_alcance'
+  | 'nao_testado'
+  | 'erro';
+
+export interface ItemTesteResultado {
+  servicoId: string;
+  servicoNome: string;
+  nivel: 1 | 2 | 3;
+  resultado: ResultadoTesteStatus;
+  data: string;
+  detalhe: string;
+}
+
+export interface RespostaTesteApi {
+  total: number;
+  resultados: ItemTesteResultado[];
+  estado?: {
+    schemaVersion: number;
+    chaveFicha: string;
+    atualizadoEm: string;
+    testes: Record<string, { nivel: number; resultado: ResultadoTesteStatus; data: string; detalhe: string }>;
+  };
+}
+
