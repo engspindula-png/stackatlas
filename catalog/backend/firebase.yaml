@@ -1,0 +1,43 @@
+id: firebase
+nome: Firebase
+categoria: backend
+subcategoria: baas
+site: https://firebase.google.com
+cadastro: https://console.firebase.google.com
+icone: firebase
+sinais:
+  configuracao:
+    - firebase.json
+    - google-services.json
+  dependencias:
+    - firebase
+    - firebase-admin
+  dependenciasObsoletas: []
+  variaveis:
+    - NEXT_PUBLIC_FIREBASE_API_KEY
+    - FIREBASE_API_KEY
+    - NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    - FIREBASE_PROJECT_ID
+    - FIREBASE_AUTH_DOMAIN
+    - FIREBASE_STORAGE_BUCKET
+    - FIREBASE_
+  hosts:
+    - "*.firebaseio.com"
+    - "*.firebaseapp.com"
+  chaves:
+    - AIzaSy
+teste:
+  nivel2:
+    metodo: GET
+    url: https://firebase.google.com
+    dominiosPermitidos:
+      - firebase.google.com
+      - firebaseio.com
+    regra: alcance_dns
+alternativas:
+  - supabase
+  - appwrite
+  - convex
+verificadoEm: "2026-11-06"
+fontes:
+  - https://firebase.google.com/docs

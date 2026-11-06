@@ -1,0 +1,33 @@
+id: pocketbase
+nome: PocketBase
+categoria: backend
+subcategoria: baas
+site: https://pocketbase.io
+cadastro: https://pocketbase.io
+icone: pocketbase
+sinais:
+  configuracao: []
+  dependencias:
+    - pocketbase
+  dependenciasObsoletas: []
+  variaveis:
+    - POCKETBASE_URL
+    - NEXT_PUBLIC_POCKETBASE_URL
+    - PB_URL
+    - POCKETBASE_
+  hosts: []
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://pocketbase.io
+    dominiosPermitidos:
+      - pocketbase.io
+    regra: alcance_dns
+alternativas:
+  - supabase
+  - appwrite
+  - firebase
+verificadoEm: "2026-11-06"
+fontes:
+  - https://pocketbase.io/docs

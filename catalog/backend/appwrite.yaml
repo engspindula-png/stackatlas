@@ -1,0 +1,40 @@
+id: appwrite
+nome: Appwrite
+categoria: backend
+subcategoria: baas
+site: https://appwrite.io
+cadastro: https://cloud.appwrite.io
+icone: appwrite
+sinais:
+  configuracao:
+    - appwrite.json
+  dependencias:
+    - appwrite
+    - node-appwrite
+  dependenciasObsoletas: []
+  variaveis:
+    - APPWRITE_ENDPOINT
+    - APPWRITE_PROJECT_ID
+    - NEXT_PUBLIC_APPWRITE_ENDPOINT
+    - NEXT_PUBLIC_APPWRITE_PROJECT_ID
+    - APPWRITE_API_KEY
+    - APPWRITE_
+  hosts:
+    - cloud.appwrite.io
+    - "*.appwrite.io"
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://cloud.appwrite.io/v1/health
+    dominiosPermitidos:
+      - cloud.appwrite.io
+      - appwrite.io
+    regra: alcance_dns
+alternativas:
+  - supabase
+  - firebase
+  - pocketbase
+verificadoEm: "2026-11-06"
+fontes:
+  - https://appwrite.io/docs

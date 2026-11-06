@@ -1,0 +1,37 @@
+id: upstash
+nome: Upstash
+categoria: bancos
+subcategoria: serverless-cache
+site: https://upstash.com
+cadastro: https://console.upstash.com
+icone: upstash
+sinais:
+  configuracao: []
+  dependencias:
+    - "@upstash/redis"
+    - "@upstash/ratelimit"
+    - "@upstash/kafka"
+    - "@upstash/qstash"
+    - "@upstash/vector"
+  dependenciasObsoletas: []
+  variaveis:
+    - UPSTASH_REDIS_REST_URL
+    - UPSTASH_REDIS_REST_TOKEN
+    - UPSTASH_KAFKA_REST_URL
+    - UPSTASH_QSTASH_TOKEN
+    - UPSTASH_
+  hosts:
+    - "*.upstash.io"
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://upstash.com
+    dominiosPermitidos:
+      - upstash.com
+    regra: alcance_dns
+alternativas:
+  - redis
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.upstash.com

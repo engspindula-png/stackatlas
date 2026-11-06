@@ -1,0 +1,33 @@
+id: cloudflare-d1
+nome: Cloudflare D1
+categoria: bancos
+subcategoria: sql-serverless
+site: https://developers.cloudflare.com/d1/
+cadastro: https://dash.cloudflare.com/sign-up
+icone: cloudflare
+sinais:
+  configuracao:
+    - wrangler.toml
+    - wrangler.jsonc
+    - wrangler.json
+  dependencias:
+    - wrangler
+    - "@cloudflare/workers-types"
+  dependenciasObsoletas: []
+  variaveis: []
+  hosts: []
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://developers.cloudflare.com/d1/
+    dominiosPermitidos:
+      - developers.cloudflare.com
+      - cloudflare.com
+    regra: alcance_dns
+alternativas:
+  - turso
+  - neon
+verificadoEm: "2026-11-06"
+fontes:
+  - https://developers.cloudflare.com/d1/

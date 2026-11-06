@@ -49,6 +49,8 @@ const KNOWN_CONFIG_FILES: Array<{ path: string; tipo: string }> = [
   { path: 'fly.toml', tipo: 'flyio' },
   { path: 'netlify.toml', tipo: 'netlify' },
   { path: 'render.yaml', tipo: 'render' },
+  { path: 'convex.json', tipo: 'convex' },
+  { path: 'appwrite.json', tipo: 'appwrite' },
 ];
 
 /**

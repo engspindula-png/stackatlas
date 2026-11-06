@@ -1,0 +1,37 @@
+id: convex
+nome: Convex
+categoria: backend
+subcategoria: baas
+site: https://www.convex.dev
+cadastro: https://dashboard.convex.dev
+icone: convex
+sinais:
+  configuracao:
+    - convex.json
+  dependencias:
+    - convex
+  dependenciasObsoletas: []
+  variaveis:
+    - CONVEX_DEPLOYMENT
+    - NEXT_PUBLIC_CONVEX_URL
+    - VITE_CONVEX_URL
+    - CONVEX_URL
+    - CONVEX_
+  hosts:
+    - "*.convex.cloud"
+    - "*.convex.site"
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://www.convex.dev
+    dominiosPermitidos:
+      - convex.dev
+      - convex.cloud
+    regra: alcance_dns
+alternativas:
+  - supabase
+  - firebase
+verificadoEm: "2026-11-06"
+fontes:
+  - https://docs.convex.dev

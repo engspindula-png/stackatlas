@@ -1,0 +1,34 @@
+id: neon
+nome: Neon
+categoria: bancos
+subcategoria: sql-serverless
+site: https://neon.tech
+cadastro: https://console.neon.tech/signup
+icone: neon
+sinais:
+  configuracao: []
+  dependencias:
+    - "@neondatabase/serverless"
+    - "@neon/serverless"
+  dependenciasObsoletas: []
+  variaveis:
+    - NEON_DATABASE_URL
+    - DATABASE_URL
+    - PGHOST
+    - NEON_
+  hosts:
+    - "*.neon.tech"
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://neon.tech
+    dominiosPermitidos:
+      - neon.tech
+    regra: alcance_dns
+alternativas:
+  - turso
+  - supabase
+verificadoEm: "2026-11-06"
+fontes:
+  - https://neon.tech/docs/introduction

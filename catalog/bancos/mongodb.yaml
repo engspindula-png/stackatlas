@@ -1,0 +1,35 @@
+id: mongodb
+nome: MongoDB
+categoria: bancos
+subcategoria: nosql-documento
+site: https://www.mongodb.com
+cadastro: https://account.mongodb.com/account/register
+icone: mongodb
+sinais:
+  configuracao: []
+  dependencias:
+    - mongodb
+    - mongoose
+  dependenciasObsoletas: []
+  variaveis:
+    - MONGODB_URI
+    - MONGO_URI
+    - MONGODB_URL
+    - MONGO_URL
+    - MONGODB_
+  hosts:
+    - "*.mongodb.net"
+  chaves: []
+teste:
+  nivel2:
+    metodo: GET
+    url: https://www.mongodb.com
+    dominiosPermitidos:
+      - mongodb.com
+    regra: alcance_dns
+alternativas:
+  - supabase
+  - firebase
+verificadoEm: "2026-11-06"
+fontes:
+  - https://www.mongodb.com/docs/
