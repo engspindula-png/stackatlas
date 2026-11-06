@@ -1,0 +1,5 @@
+{
+  "nome": "Next.js + Anthropic + Supabase",
+  "tecnologiasEsperadas": ["nextjs", "react", "anthropic", "supabase", "typescript"],
+  "variaveisEsperadas": ["ANTHROPIC_API_KEY", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"]
+}

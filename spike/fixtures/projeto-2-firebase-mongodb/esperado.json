@@ -1,0 +1,5 @@
+{
+  "nome": "Firebase + MongoDB (Node.js)",
+  "tecnologiasEsperadas": ["nodejs", "firebase", "mongodb"],
+  "variaveisEsperadas": ["FIREBASE_PROJECT_ID", "FIREBASE_CLIENT_EMAIL", "MONGODB_URI"]
+}

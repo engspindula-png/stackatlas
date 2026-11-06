@@ -1,0 +1,19 @@
+{
+  "name": "stackatlas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ferramenta local e open-source para mapeamento e inventário de stacks",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run --workspaces --if-present build",
+    "test": "npm run --workspaces --if-present test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.2",
+    "typescript": "^5.4.5"
+  }
+}

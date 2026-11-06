@@ -1,0 +1,105 @@
+{
+  "descricao": "Gabarito oficial de avaliacao da Fase 0 com repositorios reais e publicos",
+  "criadoEm": "2026-11-06T00:00:00.000Z",
+  "repositorios": [
+    {
+      "id": "nextjs-subscription-payments",
+      "nome": "Next.js Subscription Payments (Vercel)",
+      "url": "https://github.com/vercel/nextjs-subscription-payments",
+      "tipo": "Projeto unico",
+      "motivoEscolha": "Projeto oficial da Vercel muito popular (+10k stars) para integracao completa de Supabase (Auth/Database) com pagamentos Stripe.",
+      "servicosETecnologiasEsperados": [
+        "supabase",
+        "stripe",
+        "nextjs",
+        "react",
+        "tailwindcss",
+        "typescript",
+        "nodejs"
+      ],
+      "variaveisEsperadas": [
+        "NEXT_PUBLIC_SITE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET"
+      ]
+    },
+    {
+      "id": "openstatus",
+      "nome": "OpenStatus (OpenStatus HQ)",
+      "url": "https://github.com/openstatusHQ/openstatus",
+      "tipo": "Monorepo (Turborepo + pnpm workspaces)",
+      "motivoEscolha": "Monorepo de monitoramento e status page open-source popular que combina Turso (libSQL), Resend (emails transacionais), Tinybird e Next.js.",
+      "servicosETecnologiasEsperados": [
+        "turso",
+        "resend",
+        "tinybird",
+        "nextjs",
+        "react",
+        "docker",
+        "typescript",
+        "nodejs"
+      ],
+      "variaveisEsperadas": [
+        "DATABASE_URL",
+        "DATABASE_AUTH_TOKEN",
+        "RESEND_API_KEY"
+      ]
+    },
+    {
+      "id": "taxonomy",
+      "nome": "Taxonomy (shadcn)",
+      "url": "https://github.com/shadcn-ui/taxonomy",
+      "tipo": "Projeto unico",
+      "motivoEscolha": "Aplicacao open-source de referencia (+18k stars) de Next.js App Router usando Postmark (envio de emails), Stripe, Prisma e PlanetScale.",
+      "servicosETecnologiasEsperados": [
+        "postmark",
+        "stripe",
+        "prisma",
+        "planetscale",
+        "nextjs",
+        "react",
+        "tailwindcss",
+        "typescript",
+        "nodejs"
+      ],
+      "variaveisEsperadas": [
+        "NEXT_PUBLIC_APP_URL",
+        "NEXTAUTH_URL",
+        "NEXTAUTH_SECRET",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "GITHUB_ACCESS_TOKEN",
+        "DATABASE_URL",
+        "SMTP_FROM",
+        "POSTMARK_API_TOKEN",
+        "POSTMARK_SIGN_IN_TEMPLATE",
+        "POSTMARK_ACTIVATION_TEMPLATE",
+        "STRIPE_API_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "STRIPE_PRO_MONTHLY_PLAN_ID"
+      ]
+    },
+    {
+      "id": "nextjs-template-mongodb",
+      "nome": "Next.js with MongoDB (MongoDB Developer)",
+      "url": "https://github.com/mongodb-developer/nextjs-template-mongodb",
+      "tipo": "Projeto unico",
+      "motivoEscolha": "Template oficial da equipe de desenvolvedores da MongoDB para aplicacoes Next.js com o driver nativo oficial e MongoDB Atlas.",
+      "servicosETecnologiasEsperados": [
+        "mongodb",
+        "nextjs",
+        "react",
+        "tailwindcss",
+        "typescript",
+        "nodejs"
+      ],
+      "variaveisEsperadas": [
+        "MONGODB_URI"
+      ]
+    }
+  ]
+}

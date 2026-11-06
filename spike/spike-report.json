@@ -1,0 +1,102 @@
+{
+  "data": "2026-11-05T16:00:29.485Z",
+  "detector": "@specfy/stack-analyser",
+  "versao": "1.27.6",
+  "criterioAprovacao": ">= 70%",
+  "totalEsperado": 11,
+  "totalEncontrado": 11,
+  "taxaGeral": "100.0%",
+  "aprovado": true,
+  "projetos": [
+    {
+      "projeto": "Vercel + Turso + PHP",
+      "pasta": "projeto-1-vercel-turso-php",
+      "esperadas": [
+        "php",
+        "vercel",
+        "turso"
+      ],
+      "detectadas": [
+        "tursodb",
+        "vercel",
+        "php",
+        "phpcomposer"
+      ],
+      "acertos": [
+        "php",
+        "vercel",
+        "turso"
+      ],
+      "naoDetectadas": [],
+      "taxaAcerto": "100.0%",
+      "variaveisEsperadas": [
+        "TURSO_DATABASE_URL",
+        "TURSO_AUTH_TOKEN"
+      ],
+      "variaveisExtraidasPeloDetector": []
+    },
+    {
+      "projeto": "Firebase + MongoDB (Node.js)",
+      "pasta": "projeto-2-firebase-mongodb",
+      "esperadas": [
+        "nodejs",
+        "firebase",
+        "mongodb"
+      ],
+      "detectadas": [
+        "firebase",
+        "mongodb",
+        "express",
+        "nodejs"
+      ],
+      "acertos": [
+        "nodejs",
+        "firebase",
+        "mongodb"
+      ],
+      "naoDetectadas": [],
+      "taxaAcerto": "100.0%",
+      "variaveisEsperadas": [
+        "FIREBASE_PROJECT_ID",
+        "FIREBASE_CLIENT_EMAIL",
+        "MONGODB_URI"
+      ],
+      "variaveisExtraidasPeloDetector": []
+    },
+    {
+      "projeto": "Next.js + Anthropic + Supabase",
+      "pasta": "projeto-3-nextjs-anthropic-supabase",
+      "esperadas": [
+        "nextjs",
+        "react",
+        "anthropic",
+        "supabase",
+        "typescript"
+      ],
+      "detectadas": [
+        "anthropic",
+        "supabase",
+        "javascript",
+        "nextjs",
+        "nodejs",
+        "react",
+        "typescript"
+      ],
+      "acertos": [
+        "nextjs",
+        "react",
+        "anthropic",
+        "supabase",
+        "typescript"
+      ],
+      "naoDetectadas": [],
+      "taxaAcerto": "100.0%",
+      "variaveisEsperadas": [
+        "ANTHROPIC_API_KEY",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      ],
+      "variaveisExtraidasPeloDetector": []
+    }
+  ]
+}

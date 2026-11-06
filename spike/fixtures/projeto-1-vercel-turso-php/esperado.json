@@ -1,0 +1,5 @@
+{
+  "nome": "Vercel + Turso + PHP",
+  "tecnologiasEsperadas": ["php", "vercel", "turso"],
+  "variaveisEsperadas": ["TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN"]
+}

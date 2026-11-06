@@ -1,0 +1,10 @@
+{
+  "name": "teste-php-turso",
+  "description": "Projeto de teste PHP com Turso e Vercel",
+  "require": {
+    "php": ">=8.1",
+    "ext-pdo": "*",
+    "ext-pdo_sqlite": "*",
+    "guzzlehttp/guzzle": "^7.8"
+  }
+}

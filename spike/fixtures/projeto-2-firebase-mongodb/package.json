@@ -1,0 +1,12 @@
+{
+  "name": "teste-firebase-mongodb",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.19.2",
+    "firebase": "^10.12.0",
+    "firebase-admin": "^12.1.0",
+    "mongodb": "^6.6.0",
+    "mongoose": "^8.4.0"
+  }
+}
