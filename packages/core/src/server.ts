@@ -2,6 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { obterDiretorioFichasPadrao } from './fichaRecorder.js';
+import { testarServico, type SolicitacaoTesteItem, type ItemTesteResultado } from './tester.js';
 import type { Ficha } from '../../../schemas/ficha.js';
 
 export interface ResumoFichaSalva {
@@ -88,7 +89,7 @@ export async function iniciarServidor(options: ServidorOptions = {}): Promise<Se
   const server = http.createServer(async (req, res) => {
     // Configura cabeçalhos CORS e JSON
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
@@ -101,6 +102,40 @@ export async function iniciarServidor(options: ServidorOptions = {}): Promise<Se
     const pathname = parsedUrl.pathname;
 
     try {
+      // Rota POST /api/testar (Executa testes de conexão conforme Seção 7)
+      if (req.method === 'POST' && pathname === '/api/testar') {
+        let corpoRaw = '';
+        for await (const chunk of req) {
+          corpoRaw += chunk;
+        }
+
+        let payload: { servicos?: SolicitacaoTesteItem[]; servicoId?: string; nivel?: 1 | 2 | 3; valorChave?: string; chaveFicha?: string } = {};
+        try {
+          payload = corpoRaw ? JSON.parse(corpoRaw) : {};
+        } catch {
+          res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+          res.end(JSON.stringify({ erro: 'JSON inválido no corpo da requisição.' }));
+          return;
+        }
+
+        // Permite enviar um único serviço ou lista de serviços
+        const listaSolicitada: SolicitacaoTesteItem[] = payload.servicos || (payload.servicoId ? [{
+          servicoId: payload.servicoId,
+          nivel: payload.nivel,
+          valorChave: payload.valorChave,
+        }] : []);
+
+        const resultados: ItemTesteResultado[] = [];
+        for (const item of listaSolicitada) {
+          // Segurança (Seção 7.2): nunca loga ou armazena chaves
+          const resultado = await testarServico(item);
+          resultados.push(resultado);
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ total: resultados.length, resultados }, null, 2));
+        return;
+      }
       // Rota GET / ou GET /health
       if (pathname === '/' || pathname === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
